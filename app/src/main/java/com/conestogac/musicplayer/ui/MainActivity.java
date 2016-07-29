@@ -1,5 +1,6 @@
 package com.conestogac.musicplayer.ui;
 
+import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (id) {
             case R.id.nav_all:
+                Intent gotoPlayer = new Intent(MainActivity.this, play_audio_example.class);
+                startActivity(gotoPlayer);
                 break;
             case R.id.nav_album:
                 break;

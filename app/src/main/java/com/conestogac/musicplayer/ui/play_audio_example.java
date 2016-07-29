@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -49,9 +51,9 @@ public class play_audio_example extends ListActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.play_audio_example);
         selectedFile = (TextView) findViewById(R.id.selectedfile);
         seekbar = (SeekBar) findViewById(R.id.seekbar);
         playButton = (ImageButton) findViewById(R.id.play);
@@ -76,6 +78,8 @@ public class play_audio_example extends ListActivity
         nextButton.setOnClickListener(onButtonClick);
 
         prevButton.setOnClickListener(onButtonClick);
+
+        setStatusBarTranslucent(true);
 
     }
 
@@ -281,6 +285,14 @@ public class play_audio_example extends ListActivity
 
         }
     }
+
+        protected void setStatusBarTranslucent(boolean makeTranslucent) {
+            if (makeTranslucent) {
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            } else {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            }
+        }
 }
 
 
