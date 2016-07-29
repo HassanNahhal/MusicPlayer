@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_all"
+            android:icon="@drawable/ic_all_black_24dp"
+            android:title="Libary" />
+        <item
+            android:id="@+id/nav_album"
+            android:icon="@drawable/ic_by_by_album_black_24dp"
+            android:title="Album" />
+        <item
+            android:id="@+id/nav_genre"
+            android:icon="@drawable/ic_by_genre"
+            android:title="Genre" />
+        <item
+            android:id="@+id/nav_artist"
+            android:icon="@drawable/ic_by_artist_black_24dp"
+            android:title="Artist" />
+        <item
+            android:id="@+id/nav_playlist"
+            android:icon="@drawable/ic_by_playlist_to_photos_black_24dp"
+            android:title="Playlist" />
+    </group>
+
+    <item android:title="Settings">
+        <menu>
+            <item
+                android:id="@+id/nav_setting"
+                android:icon="@drawable/ic_settings_black_24dp"
+                android:title="Settings" />
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_info_black_24dp"
+                android:title="About" />
+        </menu>
+    </item>
+
+</menu>
