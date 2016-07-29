@@ -1,24 +1,21 @@
 package com.example.ncollins9293.playaudioexample;
 
-import android.Manifest;
 import android.app.ListActivity;
 import android.content.ContentUris;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -29,12 +26,14 @@ import android.widget.TextView;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.logging.Logger;
 
 public class Play_audio_example extends ListActivity {
 
     private static final int UPDATE_FREQUENCY = 500;
     private static final int STEP_VALUE = 4000;
+
+    public static final int imageWidth = 220;
+    public static final int imageHeight = 220;
 
     private MediaCursorAdapter mediaAdapter = null;
     private TextView selectedFile = null;
@@ -87,15 +86,53 @@ public class Play_audio_example extends ListActivity {
         nextButton.setOnClickListener(onButtonClick);
 
         prevButton.setOnClickListener(onButtonClick);
+
+        Bitmap albumPicture = BitmapFactory.decodeResource(getResources(), R.drawable.no_image_available220x220);
+        albumImage =  (ImageView) findViewById(R.id.albumImage);
+        albumImage.setImageBitmap(Bitmap.createScaledBitmap(albumPicture,  imageHeight , imageWidth, true));
     }
 
+    public class SongDataTag {
+        String _fileInfo;
+        int _albumId;
+
+        public SongDataTag(String fileInfo, int albumId) {
+            _fileInfo = fileInfo;
+            _albumId = albumId;
+        }
+    }
 
     @Override
     protected void onListItemClick(ListView list, View view, int position, long id) {
         super.onListItemClick(list, view, position, id);
 
-        currentFile = (String) view.getTag();
+        SongDataTag currentSong = (SongDataTag) view.getTag();
 
+        currentFile = currentSong._fileInfo;
+
+        int albumId = currentSong._albumId;
+
+        Uri sArtworkUri = Uri
+                .parse("content://media/external/audio/albumart");
+        Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
+
+        Context context = this.getBaseContext();
+
+        Bitmap albumPicture = null;
+        try {
+
+            albumPicture = MediaStore.Images.Media.getBitmap(
+                    context.getContentResolver(), albumArtUri);
+
+
+        } catch (FileNotFoundException exception) {
+            albumPicture = BitmapFactory.decodeResource(getResources(), R.drawable.no_image_available220x220);
+            exception.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        currentArtwork = albumPicture;
         startPlay(currentFile);
     }
 
@@ -116,7 +153,7 @@ public class Play_audio_example extends ListActivity {
         Log.i("Selected: ", file);
 
         ImageView albumImage =  (ImageView) findViewById(R.id.albumImage);
-        albumImage.setImageBitmap(currentArtwork);
+        albumImage.setImageBitmap(Bitmap.createScaledBitmap(currentArtwork, albumImage.getHeight(), albumImage.getWidth(), true));
         selectedFile.setText(file);
 
         seekbar.setProgress(0);
@@ -273,8 +310,7 @@ public class Play_audio_example extends ListActivity {
             Uri sArtworkUri = Uri
                     .parse("content://media/external/audio/albumart");
             Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, Integer.parseInt(id));
-            //Log.i(albumArtUri.toString());
-           // Bitmap bitmap = null;
+
 
             try {
 
@@ -296,7 +332,10 @@ public class Play_audio_example extends ListActivity {
 
             durationInMin = new BigDecimal(Double.toString(durationInMin)).setScale(2, BigDecimal.ROUND_UP).doubleValue();
             duration.setText("" + durationInMin);
-            view.setTag(cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA)));
+
+            SongDataTag currentSongData = new SongDataTag(cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA)), Integer.parseInt(id));
+            //view.setTag(cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA)));
+            view.setTag(currentSongData);
         }
 
         @Override

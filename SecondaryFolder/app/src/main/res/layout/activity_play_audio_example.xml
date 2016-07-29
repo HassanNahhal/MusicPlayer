@@ -13,9 +13,9 @@
     <ImageView
         android:id="@+id/albumImage"
         android:layout_width="220dp"
-        android:layout_height="270dp"
+        android:layout_height="220dp"
         android:scaleType="center"
-        android:src="@drawable/dave_brubeck_notes"
+        android:src="@drawable/no_image_available220x220"
         />
 
 
