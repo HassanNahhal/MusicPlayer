@@ -3,6 +3,12 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
+    <string name="no_song">No Songs</string>
     <string name="action_settings">Search</string>
+    <string name="tab_library">Library</string>
+    <string name="tab_album">Album</string>
+    <string name="tab_genre">Genre</string>
+    <string name="tab_artist">Artist</string>
+    <string name="tab_playlist">Playlist</string>
+
 </resources>

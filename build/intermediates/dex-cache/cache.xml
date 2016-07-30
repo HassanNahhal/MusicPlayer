@@ -1,2 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
+
+    <item
+        jar="/Users/infomat/src/android/MusicPlayer/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="627280a33e09ec752cc121a4b61f8e3f13d1f830">
+        <dex dex="/Users/infomat/src/android/MusicPlayer/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_46051e095c771f8c1e3efc8ea6a1bf934320aa23/classes.dex" />
+    </item>
+
+</items>
