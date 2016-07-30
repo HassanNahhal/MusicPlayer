@@ -16,6 +16,11 @@ import com.astuetz.PagerSlidingTabStrip;
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.views.SlidingTabLayout;
 
+/**
+ *  @author Changho Choi
+ *  MainActivity is a launcher activity which will setup drawer, and sliding tab layout
+ *  For each sliding layout, it will be connected with fragment
+ */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
     private PagerSlidingTabStrip mSlidingTabLayout;
@@ -35,16 +40,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.sliding_tabs);
         mSlidingTabLayout.setViewPager(mViewPager);
 
-
+        // Get Drwaer pointer and settup  - listener, toolbar
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        // Get navigation view and setup listener for each item
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
+    /**
+     * Process backkey at Drawer
+     */
 
     @Override
     public void onBackPressed() {
@@ -56,6 +66,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    /**
+     * For creating Search Actionbar menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -63,6 +78,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    /**
+     * Process Search Actionbar menu
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -78,6 +98,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * For selecting each item at drawer, proper fragement will be called
+     * @param item
+     * @return
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -90,16 +115,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(gotoPlayer);
                 break;
             case R.id.nav_album:
+                mViewPager.setCurrentItem(1);
                 break;
             case R.id.nav_genre:
+                mViewPager.setCurrentItem(2);
                 break;
             case R.id.nav_artist:
+                mViewPager.setCurrentItem(3);
                 break;
             case R.id.nav_playlist:
+                mViewPager.setCurrentItem(4);
                 break;
             case R.id.nav_setting:
+                //todo setting for something
                 break;
             case R.id.nav_about:
+                //todo just show as dialog  who made this app
                 break;
             default:
                 break;

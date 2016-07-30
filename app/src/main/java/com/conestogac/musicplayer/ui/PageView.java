@@ -1,7 +1,9 @@
 package com.conestogac.musicplayer.ui;
 
 /**
- * Created by infomat on 16-07-29.
+ * This class is to save layout and title of fragment
+ * @author: Changho Choi
+ *
  */
 public class PageView {
     int layoutId;
