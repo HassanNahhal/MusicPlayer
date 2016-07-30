@@ -1,5 +1,6 @@
 package com.conestogac.musicplayer.ui;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -65,6 +66,8 @@ public class AlbumViewAdapter extends RecyclerView.Adapter<AlbumViewAdapter.View
             public void onClick(View v) {
                 if (listener != null) {
                     listener.onClick(position);
+                    // TODO:  Fill out
+
                 }
             }
         });

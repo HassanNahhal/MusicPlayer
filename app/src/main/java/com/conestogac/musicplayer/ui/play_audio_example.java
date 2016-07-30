@@ -24,7 +24,7 @@ import com.conestogac.musicplayer.R;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-public class play_audio_example extends ListActivity
+public class Play_audio_example extends ListActivity
         {
 
     private static final int UPDATE_FREQUENCY = 500;

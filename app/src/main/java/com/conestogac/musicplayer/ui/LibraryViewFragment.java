@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.conestogac.musicplayer.R;
 
@@ -18,6 +20,7 @@ import com.conestogac.musicplayer.R;
  * @author: Changho Choi
  */
 public class LibraryViewFragment  extends Fragment {
+    private final static String TAG="LibraryViewFragment";
     private static final String KEY_POSITION="position";
     private GridLayoutManager gridLayout;
 
@@ -31,6 +34,14 @@ public class LibraryViewFragment  extends Fragment {
         return(frag);
     }
 
+    /**
+     * Setup Gridlayout Manager and AlbumViewAdapter and Recycler View
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,

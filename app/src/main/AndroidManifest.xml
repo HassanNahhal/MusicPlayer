@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.play_audio_example"
+            android:name=".ui.Play_audio_example"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>

@@ -110,8 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (id) {
             case R.id.nav_all:
-                Intent gotoPlayer = new Intent(MainActivity.this, play_audio_example.class);
-                startActivity(gotoPlayer);
+                mViewPager.setCurrentItem(0);
                 break;
             case R.id.nav_album:
                 mViewPager.setCurrentItem(1);
