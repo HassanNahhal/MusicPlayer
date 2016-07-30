@@ -14,7 +14,6 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.conestogac.musicplayer.R;
-import com.conestogac.musicplayer.views.SlidingTabLayout;
 
 /**
  *  @author Changho Choi
