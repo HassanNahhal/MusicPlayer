@@ -1,8 +1,10 @@
 package com.conestogac.musicplayer.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import com.conestogac.musicplayer.R;
  * Created by infomat on 16-07-28.
  */
 public class AlbumViewAdapter extends RecyclerView.Adapter<AlbumViewAdapter.ViewHolder> {
+    private final static String TAG = "AlbumViewAdapter";
     private String[] title;
     private String[] number;
     private int[] imageIds;
@@ -64,12 +67,20 @@ public class AlbumViewAdapter extends RecyclerView.Adapter<AlbumViewAdapter.View
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null) {
-                    listener.onClick(position);
-                    // TODO:  Fill out
-
+                Context ctxt = v.getContext();
+                Log.d(TAG, "Click on Cardview "+position);
+                Log.d(TAG, "Click on Cardview Listner "+listener);
+     //           if (listener != null) {
+     //               listener.onClick(position);
+                    // TODO:  Process OnClick on CardView: get position of click & call player with proper intent
+                    // set information
+                    // Transfer to musicplayer with intent
+                    if (position == 0) {
+                        Intent gotoMusicPlayer = new Intent(ctxt, PlayListActivity.class);
+                        ctxt.startActivity(gotoMusicPlayer);
+                    }
                 }
-            }
+         //   }
         });
     }
 

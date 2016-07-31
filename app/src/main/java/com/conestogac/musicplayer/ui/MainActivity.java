@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (id) {
             case R.id.nav_all:
+                //todo this can be implemented as folder or just one or recently view
                 mViewPager.setCurrentItem(0);
                 break;
             case R.id.nav_album:
@@ -133,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             default:
                 break;
         }
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
