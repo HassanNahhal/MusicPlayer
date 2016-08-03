@@ -4,12 +4,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.MediaController;
 
@@ -107,6 +109,10 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
             setupController();
             playbackPaused=false;
         }
+
+        ImageView albumImage =  (ImageView) findViewById(R.id.albumImage);
+        albumImage.setImageBitmap(Bitmap.createScaledBitmap(musicSrv.currentArtwork, albumImage.getHeight(), albumImage.getWidth(), true));
+
         controller.show(0);
     }
 

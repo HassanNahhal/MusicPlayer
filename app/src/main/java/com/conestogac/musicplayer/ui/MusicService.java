@@ -4,18 +4,24 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Song;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -48,6 +54,9 @@ public class MusicService extends Service implements
     //Shuffle
     private boolean shuffle=false;
     private Random rand;
+
+    public Bitmap currentArtwork;
+
     public MusicService() {
     }
 
@@ -157,6 +166,28 @@ public class MusicService extends Service implements
         catch(Exception e){
             Log.e(TAG, "Error setting data source", e);
         }
+
+        Uri sArtworkUri = Uri
+                .parse("content://media/external/audio/albumart");
+        Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, Integer.parseInt(playSong.getAlbumId()));
+
+        Context context = this.getBaseContext();
+
+        Bitmap albumPicture = null;
+        try {
+
+            albumPicture = MediaStore.Images.Media.getBitmap(
+                    context.getContentResolver(), albumArtUri);
+
+
+        } catch (FileNotFoundException exception) {
+            albumPicture = BitmapFactory.decodeResource(getResources(), R.drawable.no_image_available220x220);
+            exception.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        currentArtwork = albumPicture;
 
         //calling the asynchronous method of the MediaPlayer to prepare it
         //When the MediaPlayer is prepared, the onPrepared method will be executed

@@ -52,11 +52,13 @@ public class MusicHelper {
             int artistColumn = musicCursor.getColumnIndex
                     (android.provider.MediaStore.Audio.Media.ARTIST);
                     //add songs to list
+            int albumIdColumn = musicCursor.getColumnIndex(android.provider.MediaStore.Audio.AudioColumns.ALBUM_ID);
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
                 String thisArtist = musicCursor.getString(artistColumn);
-                songList.add(new Song(thisId, thisTitle, thisArtist));
+                String thisAlbumId = musicCursor.getString(albumIdColumn);
+                songList.add(new Song(thisId, thisTitle, thisArtist, thisAlbumId));
             }
             while (musicCursor.moveToNext());
         }
