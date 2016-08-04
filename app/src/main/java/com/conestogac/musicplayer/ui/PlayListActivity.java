@@ -4,14 +4,19 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.MediaPlayer;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.MediaController;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Song;
@@ -38,6 +43,8 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
     private MusicController controller;
     private boolean paused=false;
     private boolean playbackPaused=false;
+    private static final int UPDATE_FREQUENCY = 500;
+    private static final int STEP_VALUE = 4000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +138,7 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
     /**
      * This will ensure that the controller displays when the user returns to the app
      */
+    //todo back key does not work
     @Override
     public void onBackPressed() {
         Intent gotoLibrary = new Intent(this, MainActivity.class);
@@ -174,6 +182,8 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
         });
 
         controller.setMediaPlayer(this);
+
+        //set
         controller.setAnchorView(findViewById(R.id.song_list));
         controller.setEnabled(true);
     }
@@ -222,7 +232,7 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
     public int getCurrentPosition() {
         //to avoid various exceptions that may occur when using the MediaPlayer and MediaController classes
         if(musicSrv!=null && musicBound && musicSrv.isPng())
-        return musicSrv.getPosn();
+            return musicSrv.getPosn();
         else return 0;
     }
 

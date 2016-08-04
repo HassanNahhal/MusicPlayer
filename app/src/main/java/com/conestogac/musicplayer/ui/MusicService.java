@@ -1,6 +1,7 @@
 package com.conestogac.musicplayer.ui;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
@@ -33,6 +34,8 @@ public class MusicService extends Service implements
     private final static String TAG = "MusicService";
     //media player
     private MediaPlayer player;
+    private static MusicService mInstance = null;
+
     //song list
     private ArrayList<Song> songs;
     //current position
@@ -43,7 +46,12 @@ public class MusicService extends Service implements
 
     //play control
     private String songTitle="";
+
+    //Notification
+    NotificationManager mNotificationManager;
+    Notification mNotification = null;
     private static final int NOTIFY_ID=1;
+
 
     //Shuffle
     private boolean shuffle=false;
@@ -51,9 +59,48 @@ public class MusicService extends Service implements
     public MusicService() {
     }
 
-    /*
-        Return binding Object which will be use to send playList to service
+    // Indicates the state our service:
+    enum State {
+        Retrieving,     // the MediaRetriever is retrieving music
+        Stopped,        // media player is stopped and not prepared to play
+        Preparing,      // media player is preparing...
+        Playing,        // playback active (media player ready!). (but the media player may actually be
+                        // paused in this state if we don't have audio focus. But we stay in this state
+                        // so that we know we have to resume playback once we get focus back)
+        Paused          // playback paused (media player ready!)
+    };
+
+    State mState = State.Retrieving;
+
+
+
+    /**
+     * create & init player service
      */
+    public void onCreate(){
+        super.onCreate();
+        //initialize position
+        songPosn=0;
+        //create player
+        player = new MediaPlayer();
+        //init player
+        initMusicPlayer();
+        //for shuffle play
+        rand=new Random();
+        //set instance for getInstance
+        mInstance = this;
+        //to update notification,get notification manager
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+    }
+
+    @Override
+    public void onDestroy() {
+        stopForeground(true);
+    }
+
+    /*
+    Return binding Object which will be use to send playList to service
+    */
     @Override
     public IBinder onBind(Intent intent) {
         return musicBind;
@@ -71,25 +118,10 @@ public class MusicService extends Service implements
     }
 
     /**
-     * create & init player service
-     */
-    public void onCreate(){
-        super.onCreate();
-        //initialize position
-        songPosn=0;
-        //create player
-        player = new MediaPlayer();
-        initMusicPlayer();
-        rand=new Random();
-    }
-
-    @Override
-    public void onDestroy() {
-        stopForeground(true);
-    }
-
-    /**
      * init music player
+     * Its very simple to use the media player to play audio files.
+     * All we need to do is to initialize a media player object, set the audio stream,
+     * prepare the audio for playback and then finally start the playback
      */
     public void initMusicPlayer(){
         //set player properties
@@ -118,6 +150,7 @@ public class MusicService extends Service implements
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+        Log.e(TAG, "Playback Error");
         mp.reset();
         return false;
     }
@@ -188,6 +221,14 @@ public class MusicService extends Service implements
         Notification not = builder.build();
 
         startForeground(NOTIFY_ID, not);
+    }
+
+    /**
+     * return service instance
+     * @return
+     */
+    public static MusicService getInstance() {
+        return mInstance;
     }
 
     /**
