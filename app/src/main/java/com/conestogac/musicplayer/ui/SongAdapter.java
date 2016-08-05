@@ -17,7 +17,7 @@ import java.util.ArrayList;
  *
  * use an Adapter to map the songs to the list view.
  *
- * @author: Changho Choi
+ * author: Changho Choi
  */
 public class SongAdapter extends BaseAdapter {
     private ArrayList<Song> songs;
@@ -51,19 +51,19 @@ public class SongAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //map to song layout
-        LinearLayout songLay = (LinearLayout)songInf.inflate
+        LinearLayout songPlay = (LinearLayout)songInf.inflate
                 (R.layout.song, parent, false);
         //get title and artist views
-        TextView songView = (TextView)songLay.findViewById(R.id.song_title);
-        TextView artistView = (TextView)songLay.findViewById(R.id.song_artist);
+        TextView songView = (TextView)songPlay.findViewById(R.id.song_title);
+        TextView artistView = (TextView)songPlay.findViewById(R.id.song_artist);
         //get song using position
         Song currSong = songs.get(position);
         //get title and artist strings
         songView.setText(currSong.getTitle());
         artistView.setText(currSong.getArtist());
         //set position as tag
-        songLay.setTag(position);
-        return songLay;
+        songPlay.setTag(position);
+        return songPlay;
     }
 
 }

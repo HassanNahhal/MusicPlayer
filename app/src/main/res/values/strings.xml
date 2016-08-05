@@ -10,5 +10,10 @@
     <string name="tab_genre">Genre</string>
     <string name="tab_artist">Artist</string>
     <string name="tab_playlist">Playlist</string>
+    <string name="various_artists">Various Artists</string>albumart
+    <string name="albumart">albumart</string>
+    <string name="permission_rationale_storage">To read song list from the external storage, \ngranting this permission is needed</string>
+    <string name="_1st_title">1st Title</string>
+    <string name="_2nd_title">2nd Title</string>
 
 </resources>

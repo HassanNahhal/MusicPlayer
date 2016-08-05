@@ -1,6 +1,6 @@
 package com.conestogac.musicplayer.ui;
 
-import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -11,33 +11,42 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.conestogac.musicplayer.R;
 
+import java.util.List;
+
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+
 /**
- *  @author Changho Choi
+ *  author Changho Choi
  *  MainActivity is a launcher activity which will setup drawer, and sliding tab layout
  *  For each sliding layout, it will be connected with fragment
  */
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity
+        implements  NavigationView.OnNavigationItemSelectedListener,
+                    EasyPermissions.PermissionCallbacks {
+
     private static final String TAG = "MainActivity";
     private PagerSlidingTabStrip mSlidingTabLayout;
     private ViewPager mViewPager;
+    /**
+     * Id to identity READ_STORAGE permission request.
+     */
+    private static final int REQUEST_READ_STORAGE = 101;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        // Get the Viewpager and set its pager PageAdapter so that it can display items
-        mViewPager=(ViewPager)findViewById(R.id.view_pager);
-        mViewPager.setAdapter(new SongFragmentPagerAdapter(getApplicationContext(), getSupportFragmentManager()));
-
-        // Give SlideingYabLayout the ViewPager, this must be done AFTER the ViewPager has had its PagerAdapter set
-        mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.sliding_tabs);
-        mSlidingTabLayout.setViewPager(mViewPager);
 
         // Get Drwaer pointer and settup  - listener, toolbar
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -49,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Get navigation view and setup listener for each item
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        setupViewPager();
     }
 
     /**
@@ -67,8 +78,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * For creating Search Actionbar menu
-     * @param menu
-     * @return
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -79,8 +88,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * Process Search Actionbar menu
-     * @param item
-     * @return
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -90,17 +97,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         // Todo Handle Search Action Bar
-        if (id == R.id.action_search) {
-            return true;
-        }
+        return id == R.id.action_search || super.onOptionsItemSelected(item);
 
-        return super.onOptionsItemSelected(item);
     }
 
     /**
      * For selecting each item at drawer, proper fragement will be called
-     * @param item
-     * @return
      */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -111,10 +113,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (id) {
             case R.id.nav_all:
                 //todo this can be implemented as folder or just one or recently view
-                mViewPager.setCurrentItem(0);
+                mViewPager.setCurrentItem(1);
                 break;
             case R.id.nav_album:
-                mViewPager.setCurrentItem(1);
+                mViewPager.setCurrentItem(0);
                 break;
             case R.id.nav_genre:
                 mViewPager.setCurrentItem(2);
@@ -138,6 +140,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @AfterPermissionGranted(REQUEST_READ_STORAGE)
+    private void setupViewPager() {
+
+        if (!EasyPermissions.hasPermissions(this, READ_EXTERNAL_STORAGE)) {
+            EasyPermissions.requestPermissions(this,
+                    getString(R.string.permission_rationale_storage),
+                            REQUEST_READ_STORAGE, READ_EXTERNAL_STORAGE);
+            return;
+        }
+
+        // Get the Viewpager and set its pager PageAdapter so that it can display items
+        mViewPager=(ViewPager)findViewById(R.id.view_pager);
+        mViewPager.setAdapter(new CardViewPagerAdapter(getApplicationContext(), getSupportFragmentManager()));
+
+        // Give SlideingYabLayout the ViewPager, this must be done AFTER the ViewPager has had its PagerAdapter set
+        mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.sliding_tabs);
+        mSlidingTabLayout.setViewPager(mViewPager);
+    }
+    /*
+      Easy permission is an open source to make easy to implement run time permission
+      From SDK 23, user can remove permission after installation, and for some
+      critical permissions, it is essential to get permission from user.
+      To implement these, it is tedious job and looks code untidy.
+      By using this open source, it looks more cleaner
+      1. Add this module to Module Gradle
+      2. Insert below code at the end of code
+      3.
+   */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {}
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        Toast.makeText(MainActivity.this, "Sorry, Application can not be started without permission", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
 }

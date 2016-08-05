@@ -8,7 +8,7 @@ import android.widget.MediaController;
  * and skip (previous/next) buttons in it.
  * The widget also contains a seek bar, which updates as the song plays
  * and contains text indicating the duration of the song and the player's current position
- * @author Changho Choi
+ * author Changho Choi
  */
 public class MusicController extends MediaController {
 

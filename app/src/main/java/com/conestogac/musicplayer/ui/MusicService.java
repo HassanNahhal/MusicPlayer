@@ -5,18 +5,24 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Song;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -25,7 +31,7 @@ import java.util.Random;
  * playing the music in the Service class, but
  * control it from the Activity class, where the application's user interface operates.
  *
- * @author: Changho Choi
+ * author: Changho Choi
  */
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener,
@@ -56,6 +62,9 @@ public class MusicService extends Service implements
     //Shuffle
     private boolean shuffle=false;
     private Random rand;
+
+    public Bitmap currentArtwork;
+
     public MusicService() {
     }
 
@@ -68,7 +77,7 @@ public class MusicService extends Service implements
                         // paused in this state if we don't have audio focus. But we stay in this state
                         // so that we know we have to resume playback once we get focus back)
         Paused          // playback paused (media player ready!)
-    };
+    }
 
     State mState = State.Retrieving;
 
@@ -134,7 +143,6 @@ public class MusicService extends Service implements
 
     /**
      * pass the list of song from Activity
-     * @param theSongs
      */
     public void setList(ArrayList<Song> theSongs){
         songs=theSongs;
@@ -191,6 +199,28 @@ public class MusicService extends Service implements
             Log.e(TAG, "Error setting data source", e);
         }
 
+        Uri sArtworkUri = Uri
+                .parse("content://media/external/audio/albumart");
+        Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, Integer.parseInt(playSong.getAlbumId()));
+
+        Context context = this.getBaseContext();
+
+        Bitmap albumPicture = null;
+        try {
+
+            albumPicture = MediaStore.Images.Media.getBitmap(
+                    context.getContentResolver(), albumArtUri);
+
+
+        } catch (FileNotFoundException exception) {
+            albumPicture = BitmapFactory.decodeResource(getResources(), R.drawable.album_art);
+            exception.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        currentArtwork = albumPicture;
+
         //calling the asynchronous method of the MediaPlayer to prepare it
         //When the MediaPlayer is prepared, the onPrepared method will be executed
         player.prepareAsync();
@@ -199,7 +229,6 @@ public class MusicService extends Service implements
     /**
      * When the MediaPlayer is prepared, the onPrepared method will be executed
      * It will start player
-     * @param mediaPlayer
      */
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
@@ -225,7 +254,6 @@ public class MusicService extends Service implements
 
     /**
      * return service instance
-     * @return
      */
     public static MusicService getInstance() {
         return mInstance;
@@ -234,7 +262,6 @@ public class MusicService extends Service implements
     /**
      * Get song index to play
      * this will be called when the user picks a song from the list
-     * @param songIndex
      */
     public void setSong(int songIndex){
         songPosn=songIndex;
@@ -306,8 +333,7 @@ public class MusicService extends Service implements
     }
 
     public boolean setShuffle(){
-        if(shuffle) shuffle=false;
-        else shuffle=true;
+        shuffle = !shuffle;
         return shuffle;
     }
 

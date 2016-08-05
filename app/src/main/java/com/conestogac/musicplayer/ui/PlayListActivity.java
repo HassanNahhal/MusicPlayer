@@ -4,19 +4,21 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.media.MediaPlayer;
-import android.os.Handler;
+
+import android.graphics.Bitmap;
+
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
+
+import android.widget.ImageView;
+
 import android.widget.ListView;
 import android.widget.MediaController;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Song;
@@ -31,9 +33,9 @@ import java.util.Comparator;
  * Implement the MediaPlayerControl interface will be called when the user attempts to control playback
  */
 public class PlayListActivity extends AppCompatActivity implements MediaController.MediaPlayerControl {
-    private ArrayList<Song> songList;
+    public static final String EXTRA_SONGLIST = "songlist";
+    static private ArrayList<Song> songList;
     private ListView songView;
-    private MusicHelper musicUtil = new MusicHelper(this);
     //music service class
     private MusicService musicSrv;
     //intent to the service
@@ -43,15 +45,17 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
     private MusicController controller;
     private boolean paused=false;
     private boolean playbackPaused=false;
-    private static final int UPDATE_FREQUENCY = 500;
-    private static final int STEP_VALUE = 4000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_list);
         songView = (ListView)findViewById(R.id.song_list);
-        songList = musicUtil.getSongList();
+
+        Intent intent = getIntent();
+        if(intent.hasExtra(EXTRA_SONGLIST)) {
+            songList = (ArrayList<Song>) getIntent().getExtras().get(EXTRA_SONGLIST);
+        }
         setupController();
 
         Collections.sort(songList, new Comparator<Song>(){
@@ -64,11 +68,11 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
         songView.setAdapter(adapter);
     }
 
+
     /**
      * connect to the service
      *
      */
-
     private ServiceConnection musicConnection = new ServiceConnection(){
 
         //callback methods will inform the class when the Activity instance has successfully connected to the Service instance
@@ -105,7 +109,6 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
 
     /**
      * Adding an onClick attribute to the layout for each item in the song list.
-     * @param view
      */
     public void songPicked(View view){
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
@@ -114,6 +117,10 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
             setupController();
             playbackPaused=false;
         }
+
+        ImageView albumImage =  (ImageView) findViewById(R.id.albumImage);
+        albumImage.setImageBitmap(Bitmap.createScaledBitmap(musicSrv.currentArtwork, albumImage.getHeight(), albumImage.getWidth(), true));
+
         controller.show(0);
     }
 
@@ -243,9 +250,7 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
 
     @Override
     public boolean isPlaying() {
-        if(musicSrv!=null && musicBound)
-        return musicSrv.isPng();
-        return false;
+        return musicSrv != null && musicBound && musicSrv.isPng();
     }
 
     @Override
@@ -274,8 +279,6 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
 
     /**
      * For creating Search Actionbar menu
-     * @param menu
-     * @return
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -286,18 +289,15 @@ public class PlayListActivity extends AppCompatActivity implements MediaControll
 
     /**
      * Process Search Actionbar menu
-     * @param item
-     * @return
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
         switch (item.getItemId()) {
             case R.id.action_shuffle:
-                if (musicSrv.setShuffle() == true) {
+                if (musicSrv.setShuffle()) {
                     item.setIcon(R.drawable.ic_shuffle_white_24dp);
                 } else {
                     item.setIcon(R.drawable.ic_trending_flat_white_24dp);

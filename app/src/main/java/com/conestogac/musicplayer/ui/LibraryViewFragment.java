@@ -6,15 +6,19 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.conestogac.musicplayer.R;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * This fragement will display all libaries
- * @author: Changho Choi
+ * author: Changho Choi
  */
 public class LibraryViewFragment  extends Fragment {
     private final static String TAG="LibraryViewFragment";
@@ -34,10 +38,6 @@ public class LibraryViewFragment  extends Fragment {
     /**
      * Setup Gridlayout Manager and AlbumViewAdapter and Recycler View
      *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
      */
     @Override
     public View onCreateView(LayoutInflater inflater,
@@ -57,10 +57,10 @@ public class LibraryViewFragment  extends Fragment {
         rView.setLayoutManager(gridLayout);
 
         //setup Adapter and connect with recycler view
-        String[] album = {"Test Album", "Test Album", "Test Album"};
-        String[] songs = {"5 Songs","5 Songs","5 Songs"};
-        int[] rId = {R.drawable.album_art,R.drawable.album_art,R.drawable.album_art};
-        AlbumViewAdapter rcAdapter = new AlbumViewAdapter(album, songs, rId);
+        ArrayList<String> album = new ArrayList<>(Arrays.asList("Buenos Aires", "Córdoba", "La Plata"));
+        ArrayList<Integer> numberOfsongs = new ArrayList<>(Arrays.asList(4,5,6));
+        ArrayList<String>  rId = new ArrayList<>(Arrays.asList("","",""));
+        AlbumViewAdapter rcAdapter = new AlbumViewAdapter(album, numberOfsongs, rId);
         rView.setAdapter(rcAdapter);
 
         return(result);
@@ -69,6 +69,6 @@ public class LibraryViewFragment  extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
+        Log.d(TAG, "LibraryViewFragment Attach");
     }
 }

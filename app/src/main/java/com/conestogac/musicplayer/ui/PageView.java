@@ -2,7 +2,7 @@ package com.conestogac.musicplayer.ui;
 
 /**
  * This class is to save layout and title of fragment
- * @author: Changho Choi
+ * author: Changho Choi
  *
  */
 public class PageView {
