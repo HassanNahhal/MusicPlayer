@@ -28,6 +28,7 @@ public class CardViewPagerAdapter extends FragmentPagerAdapter {
         PAGEVIEWS.add(new PageView(R.layout.fragment_recycler_view, R.string.tab_genre));
         PAGEVIEWS.add(new PageView(R.layout.fragment_recycler_view, R.string.tab_artist));
         PAGEVIEWS.add(new PageView(R.layout.fragment_recycler_view, R.string.tab_playlist));
+        PAGEVIEWS.add(new PageView(R.layout.fragment_list_view, R.string.tab_tag_edit));
     }
 
     public CardViewPagerAdapter(Context ctxt, FragmentManager mgr) {
@@ -52,11 +53,11 @@ public class CardViewPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         curPosition = position;
         switch (position) {
-            //todo for Library View
+            //todo for Album View
             case 0:
                 return AlbumViewFragment.newInstance(position);
 
-            //todo for Album View
+            //todo for Library View
             case 1:
                 return LibraryViewFragment.newInstance(position);
 
@@ -71,6 +72,10 @@ public class CardViewPagerAdapter extends FragmentPagerAdapter {
             //todo for PlayListview
             case 4:
                 return PlayListViewFragment.newInstance(position);
+
+            //todo for Tagedit
+            case 5:
+                return LibraryViewFragment.newInstance(position);
 
             default:
                 Log.d(TAG, "OOPS!! Wrong index for tab");

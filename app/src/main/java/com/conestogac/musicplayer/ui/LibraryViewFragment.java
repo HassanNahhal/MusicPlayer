@@ -64,29 +64,33 @@ public class LibraryViewFragment  extends Fragment {
         listView.setAdapter(rcAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> listView, View view,
-                                    int position, long id) {
-            Log.d(TAG, "onItemClick");
+            public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
+                Log.d(TAG, "onItemClick");
 
-            // Get the cursor, positioned to the corresponding row in the result set
-            cursor = (Cursor) listView.getItemAtPosition(position);
+                // Get the cursor, positioned to the corresponding row in the result set
+                cursor = (Cursor) listView.getItemAtPosition(position);
 
-            String duration = MusicHelper.milliSecondsToTimer(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
-            Song selectedSong = new Song(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media._ID)),
-                    cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
-                    cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
-                    cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
-                    duration);
+                String duration = MusicHelper.milliSecondsToTimer(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+                Song selectedSong = new Song(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media._ID)),
+                        cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
+                        cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
+                        cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
+                        duration);
 
-            ArrayList <Song> songList = new ArrayList<>();
-            songList.add(selectedSong);
-            Intent gotoMusicPlayer = new Intent(ctxt, PlayListActivity.class);
-            View sharedView = result.findViewById(R.id.albumArt);
-            String transitionName = ctxt.getString(R.string.albumart);
+                ArrayList <Song> songList = new ArrayList<>();
+                songList.add(selectedSong);
+                if (CardViewPagerAdapter.curPosition == 1) {
+                    Intent gotoMusicPlayer = new Intent(ctxt, PlayListActivity.class);
+                    View sharedView = result.findViewById(R.id.albumArt);
+                    String transitionName = ctxt.getString(R.string.albumart);
 
-            ActivityOptions transitionActivityOptions = ActivityOptions.makeSceneTransitionAnimation((Activity)ctxt, sharedView, transitionName);
-            gotoMusicPlayer.putExtra(PlayListActivity.EXTRA_SONGLIST, songList);
-            ctxt.startActivity(gotoMusicPlayer, transitionActivityOptions.toBundle());
+                    ActivityOptions transitionActivityOptions = ActivityOptions.makeSceneTransitionAnimation((Activity) ctxt, sharedView, transitionName);
+                    gotoMusicPlayer.putExtra(PlayListActivity.EXTRA_SONGLIST, songList);
+                    ctxt.startActivity(gotoMusicPlayer, transitionActivityOptions.toBundle());
+                } else if(CardViewPagerAdapter.curPosition == 5) {
+                    Intent gotoTagEditor = new Intent(ctxt, TagEditorActivity.class);
+                    ctxt.startActivity(gotoTagEditor);
+                }
             }
         });
         return(result);

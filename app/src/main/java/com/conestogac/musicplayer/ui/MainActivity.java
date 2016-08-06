@@ -1,5 +1,6 @@
 package com.conestogac.musicplayer.ui;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity
                 mViewPager.setCurrentItem(4);
                 break;
             case R.id.nav_setting:
-                //todo setting for something
+                mViewPager.setCurrentItem(5);
                 break;
             case R.id.nav_about:
                 //todo just show as dialog  who made this app
