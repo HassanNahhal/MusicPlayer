@@ -58,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
-                    android:id="@+id/viewStoreNamTextView"
+                    android:id="@+id/albumTitle"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:hint="Album"
@@ -189,7 +189,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/viewEditReceiptButton"
+        android:id="@+id/TagSaveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"

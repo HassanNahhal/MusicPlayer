@@ -58,7 +58,7 @@ public class LibraryViewFragment  extends Fragment {
         listView = (ListView) result.findViewById(R.id.listView);
         listView.setEmptyView(result.findViewById(R.id.empty_list_item));
 
-        int position=getArguments().getInt(KEY_POSITION, 0);
+
 
         SongCursorAdapter rcAdapter = new SongCursorAdapter(ctxt, MusicHelper.getAllSongAsCursor(ctxt), 0);
         listView.setAdapter(rcAdapter);
@@ -79,7 +79,8 @@ public class LibraryViewFragment  extends Fragment {
 
                 ArrayList <Song> songList = new ArrayList<>();
                 songList.add(selectedSong);
-                if (CardViewPagerAdapter.curPosition == 1) {
+                int FragmentPosition=getArguments().getInt(KEY_POSITION, 0);
+                if (FragmentPosition == 1) {
                     Intent gotoMusicPlayer = new Intent(ctxt, PlayListActivity.class);
                     View sharedView = result.findViewById(R.id.albumArt);
                     String transitionName = ctxt.getString(R.string.albumart);
@@ -87,8 +88,11 @@ public class LibraryViewFragment  extends Fragment {
                     ActivityOptions transitionActivityOptions = ActivityOptions.makeSceneTransitionAnimation((Activity) ctxt, sharedView, transitionName);
                     gotoMusicPlayer.putExtra(PlayListActivity.EXTRA_SONGLIST, songList);
                     ctxt.startActivity(gotoMusicPlayer, transitionActivityOptions.toBundle());
-                } else if(CardViewPagerAdapter.curPosition == 5) {
+                } else if(FragmentPosition == 5) {
+                    Bundle b = new Bundle();
+                    b.putParcelable("id", selectedSong); //Your id
                     Intent gotoTagEditor = new Intent(ctxt, TagEditorActivity.class);
+                    gotoTagEditor.putExtras(b);
                     ctxt.startActivity(gotoTagEditor);
                 }
             }
