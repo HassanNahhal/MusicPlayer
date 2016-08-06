@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.conestogac.musicplayer.R;
-import com.conestogac.musicplayer.model.Album;
 import com.conestogac.musicplayer.model.Genre;
 import com.conestogac.musicplayer.util.MusicHelper;
 
@@ -44,7 +43,7 @@ public class GenreViewFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        View result=inflater.inflate(R.layout.fragment_library_view, container, false);
+        View result=inflater.inflate(R.layout.fragment_recycler_view, container, false);
 
         //Todo consider sharing between some views by using POSITION information
         int position=getArguments().getInt(KEY_POSITION, 0);

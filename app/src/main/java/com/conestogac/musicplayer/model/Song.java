@@ -11,14 +11,23 @@ public class Song  implements Parcelable {
     private String title;
     private String artist;
     private String albumId;
+    private String duration;
 
     public Song(long id, String title, String artist, String albumId) {
         this.id = id;
         this.title = title;
         this.artist = artist;
         this.albumId = albumId;
+        this.duration = "";
     }
 
+    public Song(long id, String title, String artist, String albumId, String duration) {
+        this.id = id;
+        this.title = title;
+        this.artist = artist;
+        this.albumId = albumId;
+        this.duration = duration;
+    }
     public long getID() {
         return id;
     }
@@ -33,6 +42,10 @@ public class Song  implements Parcelable {
 
     public String getAlbumId() { 
         return albumId;
+    }
+
+    public String getDuration() {
+        return duration;
     }
 
 

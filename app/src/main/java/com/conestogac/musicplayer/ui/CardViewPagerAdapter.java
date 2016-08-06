@@ -23,11 +23,11 @@ public class CardViewPagerAdapter extends FragmentPagerAdapter {
 
     //todo setup layout for each fragment
     static {
-        PAGEVIEWS.add(new PageView(R.layout.fragment_library_view, R.string.tab_album));
-        PAGEVIEWS.add(new PageView(R.layout.fragment_library_view, R.string.tab_library));
-        PAGEVIEWS.add(new PageView(R.layout.fragment_library_view, R.string.tab_genre));
-        PAGEVIEWS.add(new PageView(R.layout.fragment_library_view, R.string.tab_artist));
-        PAGEVIEWS.add(new PageView(R.layout.fragment_library_view, R.string.tab_playlist));
+        PAGEVIEWS.add(new PageView(R.layout.fragment_recycler_view, R.string.tab_album));
+        PAGEVIEWS.add(new PageView(R.layout.fragment_list_view, R.string.tab_library));
+        PAGEVIEWS.add(new PageView(R.layout.fragment_recycler_view, R.string.tab_genre));
+        PAGEVIEWS.add(new PageView(R.layout.fragment_recycler_view, R.string.tab_artist));
+        PAGEVIEWS.add(new PageView(R.layout.fragment_recycler_view, R.string.tab_playlist));
     }
 
     public CardViewPagerAdapter(Context ctxt, FragmentManager mgr) {

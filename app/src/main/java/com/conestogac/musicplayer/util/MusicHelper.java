@@ -1,17 +1,24 @@
 package com.conestogac.musicplayer.util;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.support.annotation.NonNull;
 
+import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Album;
 import com.conestogac.musicplayer.model.Artist;
 import com.conestogac.musicplayer.model.Genre;
 import com.conestogac.musicplayer.model.Song;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -25,8 +32,23 @@ public class MusicHelper {
     /**
      * Return song all list
      */
+    static public Cursor getAllSongAsCursor(Context ctxt) {
+        String[] projection = new String[]{Audio.Media._ID, Audio.Media.TITLE, Audio.Media.ARTIST, Audio.Media.ALBUM_ID, Audio.Media.DURATION};
+        String sortOrder = Audio.Media.TITLE + " ASC";
+
+        ContentResolver musicResolver = ctxt.getContentResolver();
+        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor musicCursor = musicResolver.query(musicUri, projection, null, null, sortOrder);
+
+        return musicCursor;
+    }
+
+
+    /**
+     * Return song all list
+     */
     static public ArrayList<Song> getAllSongList(Context ctxt) {
-        String[] projection = new String[]{Audio.Media._ID, Audio.Media.TITLE, Audio.Media.ARTIST, Audio.Media.ALBUM_ID};
+        String[] projection = new String[]{Audio.Media._ID, Audio.Media.TITLE, Audio.Media.ARTIST, Audio.Media.ALBUM_ID, Audio.Media.DURATION};
         String sortOrder = Audio.Media.TITLE + " ASC";
 
         ContentResolver musicResolver = ctxt.getContentResolver();
@@ -64,7 +86,7 @@ public class MusicHelper {
         String sortOrder = Audio.Media.TITLE + " ASC";
 
         ContentResolver musicResolver = ctxt.getContentResolver();
-        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, projection, selection, selectionArgs, sortOrder);
 
         return getSongListAsArrayList(musicCursor);
@@ -279,6 +301,64 @@ public class MusicHelper {
         }
         return genreList;
     }
+
+    /**
+     * getArtAlbumFromAlbumId
+     * retun bitmap of albumart from albumId
+     */
+    static public Bitmap getArtAlbumFromAlbumId(Context context, int albumId) {
+        Uri sArtworkUri = Uri
+                .parse("content://media/external/audio/albumart");
+        Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
+        Bitmap albumPicture = null;
+
+        try {
+
+            albumPicture = MediaStore.Images.Media.getBitmap(
+                    context.getContentResolver(), albumArtUri);
+
+
+        } catch (FileNotFoundException exception) {
+            albumPicture = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_default_art);
+            exception.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return albumPicture;
+    }
+
+
+     /**
+     * Function to convert milliseconds time to Timer Format
+     * Hours:Minutes:Seconds
+     * */
+    static public  String milliSecondsToTimer(long milliseconds) {
+        String finalTimerString = "";
+        String secondsString = "";
+
+        // Convert total duration into time
+        int hours = (int) (milliseconds / (1000 * 60 * 60));
+        int minutes = (int) (milliseconds % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) ((milliseconds % (1000 * 60 * 60)) % (1000 * 60) / 1000);
+        // Add hours if there
+        if (hours > 0) {
+            finalTimerString = hours + ":";
+        }
+
+        // Prepending 0 to seconds if it is one digit
+        if (seconds < 10) {
+            secondsString = "0" + seconds;
+        } else {
+            secondsString = "" + seconds;
+        }
+
+        finalTimerString = finalTimerString + minutes + ":" + secondsString;
+
+        // return timer string
+        return finalTimerString;
+    }
+
 }
 
 
