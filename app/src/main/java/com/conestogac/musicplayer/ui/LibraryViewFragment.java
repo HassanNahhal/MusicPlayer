@@ -35,7 +35,7 @@ public class LibraryViewFragment  extends Fragment {
     private static final String KEY_POSITION="position";
     private ListView listView;
     private Context ctxt;
-
+    Cursor cursor;
     static LibraryViewFragment newInstance(int position) {
         LibraryViewFragment frag=new LibraryViewFragment();
         Bundle args=new Bundle();
@@ -69,7 +69,7 @@ public class LibraryViewFragment  extends Fragment {
             Log.d(TAG, "onItemClick");
 
             // Get the cursor, positioned to the corresponding row in the result set
-            Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+            cursor = (Cursor) listView.getItemAtPosition(position);
 
             String duration = MusicHelper.milliSecondsToTimer(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
             Song selectedSong = new Song(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media._ID)),
@@ -93,9 +93,20 @@ public class LibraryViewFragment  extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         ctxt = context;
         Log.d(TAG, "LibraryViewFragment Attach");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        cursor.close();
     }
 }
