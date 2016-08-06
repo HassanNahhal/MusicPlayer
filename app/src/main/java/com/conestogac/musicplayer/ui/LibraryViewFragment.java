@@ -107,6 +107,5 @@ public class LibraryViewFragment  extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        cursor.close();
     }
 }
