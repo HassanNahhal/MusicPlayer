@@ -3,6 +3,7 @@ package com.conestogac.musicplayer.ui;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -42,23 +43,38 @@ public class TagEditorActivity extends AppCompatActivity {
 
 
         artistName.setText(currentSong.getArtist());
-        //albumTitle.setText(currentSong.getAlbumId());
+
         songTitle.setText(currentSong.getTitle());
-        //songYear.setText(currentSong.g);
-        //songTrack.setText(currentSong.);
-        //songComposer.setText(currentSong);
+
+        Uri URI = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String selection = MediaStore.Audio.AudioColumns._ID + " = ?";
+        String arg[] = {String.valueOf(currentSong.getID())};
+        String[] projection = new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.TITLE,
+                                           MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.ALBUM_ID,
+                                           MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.YEAR,
+                                           MediaStore.Audio.Media.COMPOSER, MediaStore.Audio.Media.TRACK
 
 
-        Button saveButton = (Button) findViewById(R.id.TagSaveButton);
-        saveButton.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
+                                             };
+        String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
 
-                 updateData(currentSong);
-            }
-        });
+        Cursor cursor = getContentResolver().query(URI,projection ,selection, arg, sortOrder);
 
 
+         if (cursor != null && cursor.moveToFirst()) {
+            albumTitle.setText(cursor.getString(4));
+            songYear.setText(cursor.getString(5));
+            songTrack.setText(cursor.getString(7));
+            songComposer.setText(cursor.getString(6));
 
+
+            Button saveButton = (Button) findViewById(R.id.TagSaveButton);
+            saveButton.setOnClickListener(new Button.OnClickListener() {
+                public void onClick(View v) {
+                    updateData(currentSong);
+                }
+            });
+        }
     }
 
     public void updateData(Song currentSong) {
@@ -79,6 +95,7 @@ public class TagEditorActivity extends AppCompatActivity {
         values.put(MediaStore.Audio.AudioColumns.YEAR, String.valueOf(songYear.getText()));
         values.put(MediaStore.Audio.AudioColumns.TRACK, String.valueOf(songTrack.getText()));
         values.put(MediaStore.Audio.AudioColumns.COMPOSER, String.valueOf(songComposer.getText()));
+
 
         String selection = MediaStore.Audio.AudioColumns._ID + " = ?";
         String arg[] = {String.valueOf(currentSong.getID())};
