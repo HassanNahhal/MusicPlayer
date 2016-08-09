@@ -16,10 +16,13 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.conestogac.musicplayer.R;
+import com.conestogac.musicplayer.model.Genre;
 import com.conestogac.musicplayer.model.Song;
+import com.conestogac.musicplayer.util.MusicHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class TagEditorActivity extends AppCompatActivity {
 
@@ -37,6 +40,7 @@ public class TagEditorActivity extends AppCompatActivity {
         EditText songYear = (EditText) findViewById(R.id.year);
         EditText songTrack = (EditText) findViewById(R.id.track);
         EditText songComposer = (EditText) findViewById(R.id.composer);
+        EditText genre = (EditText) findViewById(R.id.genre);
 
         Bundle b = getIntent().getExtras();
         final Song currentSong = b.getParcelable("id");
@@ -74,6 +78,19 @@ public class TagEditorActivity extends AppCompatActivity {
                     updateData(currentSong);
                 }
             });
+        }
+
+        ArrayList<Genre> genreList = MusicHelper.getGenreList(this.getBaseContext());
+
+        for (int j=0;j<genreList.size();j++) {
+            ArrayList<Song> SongsByGenre =  MusicHelper.getSongListByGenre(this.getBaseContext(), genreList.get(j).getID());
+            for (int k=0; k < SongsByGenre.size(); k++) {
+                if (SongsByGenre.get(k).getID() == currentSong.getID()) {
+                    String genreFound = genreList.get(j).getGenre();
+                    genre.setText(genreFound);
+
+                }
+            }
         }
     }
 
