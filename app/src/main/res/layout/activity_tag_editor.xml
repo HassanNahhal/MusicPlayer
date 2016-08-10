@@ -103,6 +103,11 @@
                     android:drawableLeft="@drawable/ic_genre"
                     android:drawablePadding="@dimen/tag_edit_padding"
                     android:layout_marginBottom="@dimen/tag_edit_margin"/>
+                <Spinner android:id="@+id/spinner"
+                    android:layout_width="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true">
+                </Spinner>
             </android.support.design.widget.TextInputLayout>
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
