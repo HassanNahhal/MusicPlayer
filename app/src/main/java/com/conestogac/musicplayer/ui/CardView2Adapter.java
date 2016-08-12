@@ -72,7 +72,7 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
         //if albumart exist, image is loaded by using Glide, otherwise it will maintain default image
         if (albumArt.get(position) != null) {
             file = new java.io.File(albumArt.get(position));
-            GlideUtil.loadImage(file, imageView);
+            GlideUtil.loadImageWithFilePath(file, imageView);
         } /*
             else {
             GlideUtil.loadProfileIcon(R.drawable.no_cover_small,imageView);

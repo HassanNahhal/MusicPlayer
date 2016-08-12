@@ -43,6 +43,9 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
 
     private File file;
 
+    //to send back event to fragement to update screen
+    private AdapterCallback mAdapterCallback;
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
         public ViewHolder(CardView v) {
@@ -86,9 +89,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     }
 
     /**
-     * To avoid Java's same using same erasure error, dummy is added
+     * Callback is  to give callback to fragment
      */
-    public CardViewAdapter(ArrayList<Playlist> playList, int dummy){
+    public CardViewAdapter(ArrayList<Playlist> playList, AdapterCallback callback){
+        this.mAdapterCallback = callback;
         for (Playlist list : playList) {
             this._id.add(list.getId());
             this.firstTitle.add(list.getName());
@@ -116,7 +120,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         //if albumart exist, image is loaded by using Glide, otherwise it will maintain default image
         if (albumArt.get(position) != null) {
             file = new java.io.File(albumArt.get(position));
-            GlideUtil.loadImage(file, imageView);
+            GlideUtil.loadImageWithFilePath(file, imageView);
         }
 
         imageView.setContentDescription(firstTitle.get(position));
@@ -170,8 +174,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                 DBHelper dbHelper = new DBHelper(v.getContext());
                 if (viewpagerPos == 5) {
                     dbHelper.deletePlaylist(_id.get(position));
-                    Toast.makeText(v.getContext(), "Deleted", Toast.LENGTH_SHORT).show();
-                    notifyItemChanged(position);
+
+                    try {
+                        mAdapterCallback.onMethodCallback(position);
+                    } catch (ClassCastException exception) {
+                        // do something
+                    }
                     return true;
                 } else {
                     return false;

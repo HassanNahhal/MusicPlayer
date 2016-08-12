@@ -148,11 +148,13 @@ public class DBHelper extends SQLiteOpenHelper {
         Integer ret_value;
         SQLiteDatabase db = getWritableDatabase();
 
-        //delete ID
-        ret_value = db.delete(TABLE_PLAYLIST,
+        //delete playlist from playlist table
+        db.delete(TABLE_PLAYLIST,
                 "_id = ? ",
                 new String[]{Integer.toString(id)});
 
+        //delete all songs at playlistsong table
+        ret_value = deleteAllSongsInThePlaylist(id);
         db.close();
         return ret_value;
     }
@@ -291,7 +293,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Integer ret_value;
         SQLiteDatabase db = getWritableDatabase();
         //delete ID
-        ret_value = db.delete(TABLE_PLAYLIST,
+        ret_value = db.delete(TABLE_PLAYLIST_SONG,
                 "(" + PLAYLIST_SONG_FK_PLAYLIST_ID + " = ?)",
                 new String[]{Integer.toString(playlist_id)});
         db.close();
@@ -306,7 +308,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //delete ID
         ret_value = db.delete(TABLE_PLAYLIST_SONG,
-                "(" + PLAYLIST_SONG_FK_SONG_ID + " = ?)",
+                PLAYLIST_SONG_FK_SONG_ID + "=? ",
                 new String[]{Integer.toString(song_id)});
         db.close();
         return ret_value;

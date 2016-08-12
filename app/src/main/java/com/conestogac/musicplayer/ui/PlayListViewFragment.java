@@ -21,7 +21,7 @@ import java.util.ArrayList;
  * Author: Hassan Nahhal
  */
 public class PlayListViewFragment extends Fragment
-        implements GetPlayListNameFragment.GetPlayListNameDialogListener{
+        implements GetPlayListNameFragment.GetPlayListNameDialogListener, AdapterCallback {
     private final static String TAG="PlayListViewFragment";
     private static final String KEY_POSITION="position";
     private Context ctxt;
@@ -74,7 +74,7 @@ public class PlayListViewFragment extends Fragment
 
         if (playLists != null) {
             //To reuse between view, use method overloading for constructor depends on view
-            rcAdapter = new CardViewAdapter(playLists, 0);
+            rcAdapter = new CardViewAdapter(playLists, this);
             rView.setAdapter(rcAdapter);
         }
 
@@ -98,6 +98,8 @@ public class PlayListViewFragment extends Fragment
         return(view);
     }
 
+
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -116,7 +118,17 @@ public class PlayListViewFragment extends Fragment
         DBHelper dbHelper = new DBHelper(getContext());
         dbHelper.insertPlaylist(playlist_item);
         playLists.add(playlist_item);  //although it is clear read from db, but to minimize garbage just adding at arraylist
-        rcAdapter = new CardViewAdapter(playLists, 0);
+        rcAdapter = new CardViewAdapter(playLists, this);
+        rView.setAdapter(rcAdapter);
+        rView.invalidate();
+    }
+
+    @Override
+    public void onMethodCallback(int position) {
+        Log.d(TAG, "onMethodCallback");
+        //to minimize db operation and garbage
+        playLists.remove(position);
+        rcAdapter = new CardViewAdapter(playLists, this);
         rView.setAdapter(rcAdapter);
         rView.invalidate();
     }
