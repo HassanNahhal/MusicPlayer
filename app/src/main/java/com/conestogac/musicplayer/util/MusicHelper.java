@@ -48,6 +48,7 @@ public class MusicHelper {
      * Return song all list
      */
     static public ArrayList<Song> getAllSongList(Context ctxt) {
+        ArrayList<Song> songList;
         String[] projection = new String[]{Audio.Media._ID, Audio.Media.TITLE, Audio.Media.ARTIST, Audio.Media.ALBUM_ID, Audio.Media.DURATION};
         String sortOrder = Audio.Media.TITLE + " ASC";
 
@@ -55,13 +56,47 @@ public class MusicHelper {
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, projection, null, null, sortOrder);
 
-        return getSongListAsArrayList(musicCursor);
+        songList = getSongListAsArrayList(musicCursor);
+        if (musicCursor != null)
+            musicCursor.close();
+        return songList;
+    }
+
+    /**
+     * Return song from songid
+     */
+    static public Song getSongFromId(Context ctxt, int songId) {
+        Song foundSong = null;
+        String[] projection = new String[]{Audio.Media._ID, Audio.Media.TITLE, Audio.Media.ARTIST, Audio.Media.ALBUM_ID, Audio.Media.DURATION};
+        String   selection = Audio.Media._ID + "=?";
+        String[] selectionArgs = {String.valueOf(songId)};
+
+        ContentResolver musicResolver = ctxt.getContentResolver();
+        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor musicCursor = musicResolver.query(musicUri, projection, selection, selectionArgs, null);
+
+        if (musicCursor != null) {
+            int idColumn = musicCursor.getColumnIndex
+                    (Audio.Media._ID);
+            int titleColumn = musicCursor.getColumnIndex
+                    (Audio.Media.TITLE);
+            int artistColumn = musicCursor.getColumnIndex
+                    (Audio.Media.ARTIST);
+            int albumIdColumn = musicCursor.getColumnIndex
+                    (Audio.Albums.ALBUM_ID);
+
+            foundSong = new Song(musicCursor.getLong(idColumn), musicCursor.getString(titleColumn),
+                    musicCursor.getString(artistColumn), musicCursor.getString(albumIdColumn));
+            musicCursor.close();
+        }
+        return foundSong;
     }
 
     /**
      * Return song all list
      */
     static public ArrayList<Song> getSongListByAlbum(Context ctxt, int albumId) {
+        ArrayList<Song> songList;
 
         String[] projection = new String[]{Audio.Media._ID, Audio.Media.TITLE, Audio.Media.ARTIST, Audio.Media.ALBUM_ID};
         String   selection = Audio.Media.ALBUM_ID + "=?";
@@ -72,14 +107,17 @@ public class MusicHelper {
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, projection, selection, selectionArgs, sortOrder);
 
-        return getSongListAsArrayList(musicCursor);
+        songList = getSongListAsArrayList(musicCursor);
+        if (musicCursor != null)
+            musicCursor.close();
+        return songList;
     }
 
     /**
      * Return song by Artist
      */
     static public ArrayList<Song> getSongListByArtist(Context ctxt, int artistId) {
-
+        ArrayList<Song> songList;
         String[] projection = new String[]{Audio.Media._ID, Audio.Media.TITLE, Audio.Media.ARTIST, Audio.Media.ALBUM_ID};
         String   selection = Audio.Media.ARTIST_ID + "=?";
         String[] selectionArgs = {String.valueOf(artistId)};
@@ -89,7 +127,10 @@ public class MusicHelper {
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, projection, selection, selectionArgs, sortOrder);
 
-        return getSongListAsArrayList(musicCursor);
+        songList = getSongListAsArrayList(musicCursor);
+        if (musicCursor != null)
+            musicCursor.close();
+        return songList;
     }
 
     /*
@@ -132,7 +173,7 @@ public class MusicHelper {
      * Return song by Genre
      */
     static public ArrayList<Song> getSongListByGenre(Context ctxt, int genreId) {
-
+        ArrayList<Song> songList = new ArrayList<>();
         String[] projection = new String[]{Audio.Genres.Members.AUDIO_ID, Audio.Genres.Members.TITLE,
         Audio.Genres.Members.ARTIST, Audio.Genres.Members.ALBUM_ID};
         String sortOrder = Audio.Media.TITLE + " ASC";
@@ -141,8 +182,13 @@ public class MusicHelper {
         Uri musicUri = Audio.Genres.Members.getContentUri("external", genreId);
 
         Cursor musicCursor = musicResolver.query(musicUri, projection, null, null, sortOrder);
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            songList = getSongListAsArrayList2(musicCursor);
+            musicCursor.close();
+        }
 
-        return getSongListAsArrayList2(musicCursor);
+        return songList;
+
     }
 
 
@@ -158,27 +204,27 @@ public class MusicHelper {
         String thisAlbumId;
 
         ArrayList<Song> songList = new ArrayList<>();
-        if (musicCursor != null && musicCursor.moveToFirst()) {
-            //todo this will be added depends on list to be shown
-            //get columns
-            int idColumn = musicCursor.getColumnIndex
-                    (Audio.Genres.Members.AUDIO_ID);
-            int titleColumn = musicCursor.getColumnIndex
-                    (Audio.Genres.Members.TITLE);
-            int artistColumn = musicCursor.getColumnIndex
-                    (Audio.Genres.Members.ARTIST);
-            int albumIdColumn = musicCursor.getColumnIndex
-                    (Audio.Genres.Members.ALBUM_ID);
-            do {
-                thisId = musicCursor.getLong(idColumn);
-                thisTitle = musicCursor.getString(titleColumn);
-                thisArtist = musicCursor.getString(artistColumn);
-                thisAlbumId = musicCursor.getString(albumIdColumn);
-                songList.add(new Song(thisId, thisTitle, thisArtist, thisAlbumId));
-            }
-            while (musicCursor.moveToNext());
-            musicCursor.close();
+
+        //todo this will be added depends on list to be shown
+        //get columns
+        int idColumn = musicCursor.getColumnIndex
+                (Audio.Genres.Members.AUDIO_ID);
+        int titleColumn = musicCursor.getColumnIndex
+                (Audio.Genres.Members.TITLE);
+        int artistColumn = musicCursor.getColumnIndex
+                (Audio.Genres.Members.ARTIST);
+        int albumIdColumn = musicCursor.getColumnIndex
+                (Audio.Genres.Members.ALBUM_ID);
+        do {
+            thisId = musicCursor.getLong(idColumn);
+            thisTitle = musicCursor.getString(titleColumn);
+            thisArtist = musicCursor.getString(artistColumn);
+            thisAlbumId = musicCursor.getString(albumIdColumn);
+            songList.add(new Song(thisId, thisTitle, thisArtist, thisAlbumId));
         }
+        while (musicCursor.moveToNext());
+        musicCursor.close();
+
         return songList;
     }
 
@@ -277,8 +323,8 @@ public class MusicHelper {
         String thisName;
         Cursor genreCursor;
 
-        Uri artistUri = Audio.Genres.EXTERNAL_CONTENT_URI;
-        Cursor musicCursor = musicResolver.query(artistUri, projection, null, null, sortOrder);
+        Uri genreUri = Audio.Genres.EXTERNAL_CONTENT_URI;
+        Cursor musicCursor = musicResolver.query(genreUri, projection, null, null, sortOrder);
 
         if (musicCursor != null && musicCursor.moveToFirst()) {
             //get columns
@@ -358,6 +404,33 @@ public class MusicHelper {
         // return timer string
         return finalTimerString;
     }
+
+    /**
+     * Get Album URI from SongID
+     *
+     */
+    static public Bitmap getALbumArtFromSongID(Context context, String albumId) {
+
+        Uri sArtworkUri = Uri
+                .parse("content://media/external/audio/albumart");
+        Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, Integer.parseInt(albumId));
+
+        Bitmap albumPicture = null;
+        try {
+
+            albumPicture = MediaStore.Images.Media.getBitmap(
+                    context.getContentResolver(), albumArtUri);
+
+
+        } catch (FileNotFoundException exception) {
+            albumPicture = BitmapFactory.decodeResource(context.getResources(), R.drawable.album_art);
+            exception.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return albumPicture;
+    }
+
 
 }
 

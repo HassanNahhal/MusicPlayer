@@ -5,24 +5,20 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Song;
+import com.conestogac.musicplayer.util.MusicHelper;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -41,7 +37,7 @@ public class MusicService extends Service implements
     //media player
     private MediaPlayer player;
     private static MusicService mInstance = null;
-
+   private  Song playSong;
     //song list
     private ArrayList<Song> songs;
     //current position
@@ -183,7 +179,7 @@ public class MusicService extends Service implements
         player.reset();
 
         //get the song from the list, extract the ID for it using its Song object, and model this as a URI
-        Song playSong = songs.get(songPosn);
+        playSong = songs.get(songPosn);
         songTitle=playSong.getTitle();
         long currSong = playSong.getID();
         Uri trackUri = ContentUris.withAppendedId(
@@ -199,27 +195,7 @@ public class MusicService extends Service implements
             Log.e(TAG, "Error setting data source", e);
         }
 
-        Uri sArtworkUri = Uri
-                .parse("content://media/external/audio/albumart");
-        Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, Integer.parseInt(playSong.getAlbumId()));
-
-        Context context = this.getBaseContext();
-
-        Bitmap albumPicture = null;
-        try {
-
-            albumPicture = MediaStore.Images.Media.getBitmap(
-                    context.getContentResolver(), albumArtUri);
-
-
-        } catch (FileNotFoundException exception) {
-            albumPicture = BitmapFactory.decodeResource(getResources(), R.drawable.album_art);
-            exception.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        currentArtwork = albumPicture;
+        currentArtwork = MusicHelper.getALbumArtFromSongID(this.getBaseContext(), playSong.getAlbumId());
 
         //calling the asynchronous method of the MediaPlayer to prepare it
         //When the MediaPlayer is prepared, the onPrepared method will be executed
@@ -234,7 +210,7 @@ public class MusicService extends Service implements
     public void onPrepared(MediaPlayer mediaPlayer) {
         //start playback
         mediaPlayer.start();
-        Intent notIntent = new Intent(this, PlayListActivity.class);
+        Intent notIntent = new Intent(this, PlayerActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notIntent, PendingIntent.FLAG_UPDATE_CURRENT);

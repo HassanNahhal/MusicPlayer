@@ -39,7 +39,7 @@ public class ArtistViewFragment extends Fragment {
     }
 
     /**
-     * Setup Gridlayout Manager and AlbumViewAdapter and Recycler View
+     * Setup Gridlayout Manager and CardViewAdapter and Recycler View
      *
      * @param inflater
      * @param container
@@ -66,7 +66,7 @@ public class ArtistViewFragment extends Fragment {
 
         if (artistList != null) {
             //To reuse between view, use method overloading for constructor depends on view
-            AlbumViewAdapter rcAdapter = new AlbumViewAdapter(artistList, true);
+            CardViewAdapter rcAdapter = new CardViewAdapter(artistList, true);
             rView.setAdapter(rcAdapter);
         }
         return(result);

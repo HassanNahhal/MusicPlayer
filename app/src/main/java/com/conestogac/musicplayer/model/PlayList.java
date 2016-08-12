@@ -1,14 +1,21 @@
 package com.conestogac.musicplayer.model;
 
 /**
- * Created by infomat on 16-07-28.
+ * Author Changho Choi
  */
-public class PlayList {
+public class Playlist {
     private int id;
     private String name;
-    public PlayList(int id, String name) {
-        this.id = id;
+    private int numberOfSong;
+
+    public Playlist(String name, int numberOfSong) {
         this.name = name;
+        this.numberOfSong = numberOfSong;
+    }
+
+    public Playlist(int id, String name, int numberOfSong) {
+        this(name, numberOfSong);
+        this.id = id;
     }
 
     public int getId() {
@@ -25,5 +32,13 @@ public class PlayList {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getNumberOfSong() {
+        return this.numberOfSong;
+    }
+
+    public void setNumberOfSong(int numberOfSong) {
+        this.numberOfSong = numberOfSong;
     }
 }

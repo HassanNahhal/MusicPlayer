@@ -36,7 +36,7 @@ public class GenreViewFragment extends Fragment{
     }
 
     /**
-     * Setup Gridlayout Manager and AlbumViewAdapter and Recycler View
+     * Setup Gridlayout Manager and CardViewAdapter and Recycler View
      *
      */
     @Override
@@ -59,7 +59,7 @@ public class GenreViewFragment extends Fragment{
 
         if (genreList != null) {
             //To reuse between view, use method overloading for constructor depends on view
-            AlbumView2Adapter rcAdapter = new AlbumView2Adapter(genreList);
+            CardView2Adapter rcAdapter = new CardView2Adapter(genreList);
             rView.setAdapter(rcAdapter);
         }
         return(result);

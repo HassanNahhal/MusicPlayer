@@ -9,8 +9,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +18,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.conestogac.musicplayer.R;
-import com.conestogac.musicplayer.model.PlayList;
 import com.conestogac.musicplayer.model.Song;
 import com.conestogac.musicplayer.util.MusicHelper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+
 
 /**
  * This fragement will display all libaries
@@ -47,7 +45,7 @@ public class LibraryViewFragment  extends Fragment {
     }
 
     /**
-     * Setup Gridlayout Manager and AlbumViewAdapter and Recycler View
+     * Setup Gridlayout Manager and CardViewAdapter and Recycler View
      *
      */
     @Override
@@ -58,7 +56,7 @@ public class LibraryViewFragment  extends Fragment {
         listView = (ListView) result.findViewById(R.id.listView);
         listView.setEmptyView(result.findViewById(R.id.empty_list_item));
 
-        int position=getArguments().getInt(KEY_POSITION, 0);
+
 
         SongCursorAdapter rcAdapter = new SongCursorAdapter(ctxt, MusicHelper.getAllSongAsCursor(ctxt), 0);
         listView.setAdapter(rcAdapter);
@@ -79,16 +77,20 @@ public class LibraryViewFragment  extends Fragment {
 
                 ArrayList <Song> songList = new ArrayList<>();
                 songList.add(selectedSong);
-                if (CardViewPagerAdapter.curPosition == 1) {
-                    Intent gotoMusicPlayer = new Intent(ctxt, PlayListActivity.class);
+                int FragmentPosition=getArguments().getInt(KEY_POSITION, 0);
+                if (FragmentPosition == 1) {
+                    Intent gotoMusicPlayer = new Intent(ctxt, PlayerActivity.class);
                     View sharedView = result.findViewById(R.id.albumArt);
                     String transitionName = ctxt.getString(R.string.albumart);
 
                     ActivityOptions transitionActivityOptions = ActivityOptions.makeSceneTransitionAnimation((Activity) ctxt, sharedView, transitionName);
-                    gotoMusicPlayer.putExtra(PlayListActivity.EXTRA_SONGLIST, songList);
+                    gotoMusicPlayer.putExtra(PlayerActivity.EXTRA_SONGLIST, songList);
                     ctxt.startActivity(gotoMusicPlayer, transitionActivityOptions.toBundle());
-                } else if(CardViewPagerAdapter.curPosition == 5) {
+                } else if(FragmentPosition == 5) {
+                    Bundle b = new Bundle();
+                    b.putParcelable("id", selectedSong); //Your id
                     Intent gotoTagEditor = new Intent(ctxt, TagEditorActivity.class);
+                    gotoTagEditor.putExtras(b);
                     ctxt.startActivity(gotoTagEditor);
                 }
             }
@@ -107,6 +109,7 @@ public class LibraryViewFragment  extends Fragment {
         ctxt = context;
         Log.d(TAG, "LibraryViewFragment Attach");
     }
+
 
     @Override
     public void onStop() {

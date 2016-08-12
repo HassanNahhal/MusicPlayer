@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context=".ui.Play_audio_example"
+    tools:context=".ref.Play_audio_example"
     android:background="@drawable/fullscreen_bg_gradient">
 
     <ListView android:id="@android:id/list"

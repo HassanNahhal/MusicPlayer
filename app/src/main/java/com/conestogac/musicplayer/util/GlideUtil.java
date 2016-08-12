@@ -28,12 +28,10 @@ public class GlideUtil {
                 .into(imageView);
     }
 
-    public static void loadProfileIcon(String url, ImageView imageView) {
+    public static void loadProfileIcon(int resourceID, ImageView imageView) {
         Context context = imageView.getContext();
         Glide.with(context)
-                .load(Uri.parse(url))
-                .placeholder(R.drawable.ic_library_music_white_48dp)
-                .dontAnimate()
+                .load(resourceID)
                 .fitCenter()
                 .into(imageView);
     }
