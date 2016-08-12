@@ -28,7 +28,7 @@
             <ImageView
                 android:layout_row="0"
                 android:layout_column="0"
-                android:id="@+id/viewReceiptImageButton"
+                android:id="@+id/tagViewAlbumImage"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:contentDescription="@string/albumart"
@@ -91,7 +91,7 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <EditText
+               <!-- <EditText
                     android:id="@+id/genre"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
@@ -102,12 +102,26 @@
                     android:layout_marginLeft="@dimen/tag_edit_margin"
                     android:drawableLeft="@drawable/ic_genre"
                     android:drawablePadding="@dimen/tag_edit_padding"
-                    android:layout_marginBottom="@dimen/tag_edit_margin"/>
-                <Spinner android:id="@+id/spinner"
-                    android:layout_width="10dp"
+                    android:layout_marginBottom="@dimen/tag_edit_margin"/>-->
+
+                <EditText android:id="@+id/genreIcon"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true">
+                    android:drawableLeft="@drawable/ic_genre"
+                    android:hint="Genre"
+                    android:layout_alignParentTop="true"
+                   />
+                <Spinner android:id="@+id/spinner"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignBaseline="@id/spinner"
+                    android:layout_toRightOf="@id/spinner"
+                    android:drawSelectorOnTop="true"
+                    >
                 </Spinner>
+
             </android.support.design.widget.TextInputLayout>
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
