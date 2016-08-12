@@ -136,7 +136,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         //update data by search with ID
         numberOfUpdated = db.update(TABLE_PLAYLIST, cv, "_id = ? ",
-                new String[]{Integer.toString(playlist.getId())});
+                new String[]{Integer.toString(playlist.getID())});
 
         db.close();
         return numberOfUpdated;

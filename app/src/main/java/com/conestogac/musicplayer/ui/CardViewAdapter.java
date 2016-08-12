@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.support.v7.widget.CardView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Album;
@@ -94,7 +93,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     public CardViewAdapter(ArrayList<Playlist> playList, AdapterCallback callback){
         this.mAdapterCallback = callback;
         for (Playlist list : playList) {
-            this._id.add(list.getId());
+            this._id.add(list.getID());
             this.firstTitle.add(list.getName());
             this.secondTitle.add("");
             this.number.add(list.getNumberOfSong());

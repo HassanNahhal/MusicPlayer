@@ -116,7 +116,8 @@ public class PlayListViewFragment extends Fragment
         Log.d(TAG, "onFinishGetPlayListNameDialog");
         Playlist playlist_item = new Playlist(playlistName, 0);
         DBHelper dbHelper = new DBHelper(getContext());
-        dbHelper.insertPlaylist(playlist_item);
+
+        playlist_item.setID(dbHelper.insertPlaylist(playlist_item));
         playLists.add(playlist_item);  //although it is clear read from db, but to minimize garbage just adding at arraylist
         rcAdapter = new CardViewAdapter(playLists, this);
         rView.setAdapter(rcAdapter);
