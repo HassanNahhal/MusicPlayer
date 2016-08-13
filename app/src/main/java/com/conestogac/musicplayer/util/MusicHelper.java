@@ -358,12 +358,10 @@ public class MusicHelper {
         Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri, albumId);
         Bitmap albumPicture = null;
 
+        //Handle Exception in case of albumart not found
         try {
-
             albumPicture = MediaStore.Images.Media.getBitmap(
                     context.getContentResolver(), albumArtUri);
-
-
         } catch (FileNotFoundException exception) {
             albumPicture = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_default_art);
             exception.printStackTrace();

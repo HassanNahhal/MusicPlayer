@@ -2,6 +2,7 @@ package com.conestogac.musicplayer.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +28,8 @@ public class AlbumViewFragment extends Fragment {
     private GridLayoutManager gridLayout;
     private MusicHelper musicHelper;
     private ArrayList<Album> albumList;
+    private RecyclerView rView;
+    private CardViewAdapter rcAdapter;
 
     static AlbumViewFragment newInstance(int position) {
         AlbumViewFragment frag=new AlbumViewFragment();
@@ -59,16 +62,13 @@ public class AlbumViewFragment extends Fragment {
         gridLayout = new GridLayoutManager(getActivity(), 2);
 
         //connect recycler view with grid layout manager
-        RecyclerView rView = (RecyclerView) result.findViewById(R.id.recyclerView);
+        rView = (RecyclerView) result.findViewById(R.id.recyclerView);
         rView.setHasFixedSize(true);
         rView.setLayoutManager(gridLayout);
-        albumList = MusicHelper.getAlbumList(ctxt);
 
-        if (albumList != null) {
-            //To reuse between view, use method overloading for constructor depends on view
-            CardViewAdapter rcAdapter = new CardViewAdapter(albumList);
-            rView.setAdapter(rcAdapter);
-        }
+        //read data in separate thread
+        readDataFromDB();
+
         return(result);
     }
 
@@ -77,6 +77,25 @@ public class AlbumViewFragment extends Fragment {
         super.onAttach(context);
         ctxt = context;
         Log.d(TAG, "AlbumViewFragment Attach");
+    }
+
+    /**
+     * Database query can be a time consuming task ..
+     * so its safe to call database query in another thread
+    */
+    private void readDataFromDB() {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+            albumList = MusicHelper.getAlbumList(ctxt);
+
+            if (albumList != null) {
+                //To reuse between view, use method overloading for constructor depends on view
+                rcAdapter = new CardViewAdapter(albumList);
+                rView.setAdapter(rcAdapter);
+            }
+            }
+        });
     }
 
 }

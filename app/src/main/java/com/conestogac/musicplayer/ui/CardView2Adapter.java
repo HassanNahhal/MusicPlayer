@@ -53,7 +53,7 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
             //todo what image for genre
             this.albumArt.add(null);
         }
-        viewPagerPos = 3;
+        viewPagerPos = SlideViewPagerAdapter.GENRE_VIEW;
     }
 
 
@@ -96,7 +96,7 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
                 String transitionName = ctxt.getString(R.string.albumart);
 
                 switch (viewPagerPos){
-                    case 3:  //Get Genre
+                    case SlideViewPagerAdapter.GENRE_VIEW:  //Get Genre
                         songArrayList = MusicHelper.getSongListByGenre(ctxt, _id.get(position));
                         break;
                 }

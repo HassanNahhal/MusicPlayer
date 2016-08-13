@@ -16,6 +16,7 @@ import java.util.ArrayList;
 /**
  *
  * use an Adapter to map the songs to the list view.
+ * This is used within MusicPlayer
  *
  * author: Changho Choi
  */

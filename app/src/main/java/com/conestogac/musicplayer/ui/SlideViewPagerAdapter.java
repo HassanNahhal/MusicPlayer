@@ -20,6 +20,15 @@ public class SlideViewPagerAdapter extends FragmentPagerAdapter {
     private Context ctxt = null;
     private final static String TAG = "SlideViewPagerAdapter";
 
+    //definition of tab order
+    public final static int ALBUM_VIEW = 1;
+    public final static int LIBRARY_VIEW = 2;
+    public final static int GENRE_VIEW = 3;
+    public final static int ARTIST_VIEW = 4;
+    public final static int PLAYLIST_VIEW = 5;
+    public final static int TAG_EDITOR = 6;
+
+
     //todo setup layout for each fragment
     static {
         PAGEVIEWS.add(new PageView(R.layout.fragment_recycler_view, R.string.tab_album));
@@ -50,29 +59,29 @@ public class SlideViewPagerAdapter extends FragmentPagerAdapter {
       */
     @Override
     public Fragment getItem(int position) {
-        switch (position) {
+        switch (position+1) {
             //todo for Album View
-            case 0:
+            case ALBUM_VIEW:
                 return AlbumViewFragment.newInstance(position);
 
             //todo for Library View
-            case 1:
+            case LIBRARY_VIEW:
                 return LibraryViewFragment.newInstance(position);
 
             //todo for Genre View
-            case 2:
+            case GENRE_VIEW:
                 return GenreViewFragment.newInstance(position);
 
             //todo for Artist View
-            case 3:
+            case ARTIST_VIEW:
                 return ArtistViewFragment.newInstance(position);
 
             //todo for PlayListview
-            case 4:
+            case PLAYLIST_VIEW:
                 return PlayListViewFragment.newInstance(position);
 
             //todo for Tagedit
-            case 5:
+            case TAG_EDITOR:
                 return LibraryViewFragment.newInstance(position);
 
             default:

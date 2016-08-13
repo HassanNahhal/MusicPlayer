@@ -113,25 +113,25 @@ public class MainActivity extends AppCompatActivity
         // Todo Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch (id) {
+        switch (id+1) {
             case R.id.nav_all:
                 //todo this can be implemented as folder or just one or recently view
-                mViewPager.setCurrentItem(1);
+                mViewPager.setCurrentItem(SlideViewPagerAdapter.LIBRARY_VIEW);
                 break;
             case R.id.nav_album:
-                mViewPager.setCurrentItem(0);
+                mViewPager.setCurrentItem(SlideViewPagerAdapter.ALBUM_VIEW);
                 break;
             case R.id.nav_genre:
-                mViewPager.setCurrentItem(2);
+                mViewPager.setCurrentItem(SlideViewPagerAdapter.GENRE_VIEW);
                 break;
             case R.id.nav_artist:
-                mViewPager.setCurrentItem(3);
+                mViewPager.setCurrentItem(SlideViewPagerAdapter.ARTIST_VIEW);
                 break;
             case R.id.nav_playlist:
-                mViewPager.setCurrentItem(4);
+                mViewPager.setCurrentItem(SlideViewPagerAdapter.PLAYLIST_VIEW);
                 break;
             case R.id.nav_setting:
-                mViewPager.setCurrentItem(5);
+                mViewPager.setCurrentItem(SlideViewPagerAdapter.TAG_EDITOR);
                 break;
             case R.id.nav_about:
                 //todo just show as dialog  who made this app

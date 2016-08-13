@@ -2,6 +2,7 @@ package com.conestogac.musicplayer.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Playlist;
 import com.conestogac.musicplayer.util.DBHelper;
+import com.conestogac.musicplayer.util.MusicHelper;
 
 import java.util.ArrayList;
 
@@ -28,7 +30,7 @@ public class PlayListViewFragment extends Fragment
     private CardViewAdapter rcAdapter;
     private RecyclerView rView;
     private GridLayoutManager gridLayout;
-    private ArrayList<Playlist> playLists;
+    private static ArrayList<Playlist> playLists;
     private DBHelper dbHelper;
     private FloatingActionButton fab;
 
@@ -69,14 +71,7 @@ public class PlayListViewFragment extends Fragment
         rView.setHasFixedSize(true);
         rView.setLayoutManager(gridLayout);
 
-        playLists = dbHelper.getAllPlaylists();
-
-
-        if (playLists != null) {
-            //To reuse between view, use method overloading for constructor depends on view
-            rcAdapter = new CardViewAdapter(playLists, this);
-            rView.setAdapter(rcAdapter);
-        }
+        readDataFromDB();
 
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.show();
@@ -132,5 +127,24 @@ public class PlayListViewFragment extends Fragment
         rcAdapter = new CardViewAdapter(playLists, this);
         rView.setAdapter(rcAdapter);
         rView.invalidate();
+    }
+
+    /**
+     * Database query can be a time consuming task ..
+     * so its safe to call database query in another thread
+     */
+    private void readDataFromDB() {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+            playLists = dbHelper.getAllPlaylists();
+
+            if (playLists != null) {
+                //To reuse between view, use method overloading for constructor depends on view
+                rcAdapter = new CardViewAdapter(playLists, PlayListViewFragment.this);
+                rView.setAdapter(rcAdapter);
+            }
+            }
+        });
     }
 }

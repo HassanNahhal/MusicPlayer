@@ -4,14 +4,19 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.CardView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Album;
@@ -39,6 +44,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     private ArrayList<Integer> number  = new ArrayList<>();
     private ArrayList<Song> songArrayList = new ArrayList<>();
     private int viewpagerPos = 0;
+    private Context ctxt;
 
     private File file;
 
@@ -47,9 +53,11 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
+        private ImageView overflow;
         public ViewHolder(CardView v) {
             super(v);
-            cardView=v;
+            cardView = v;
+            overflow = (ImageView) v.findViewById(R.id.overflow);
         }
     }
 
@@ -67,7 +75,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
             this.secondTitle.add(album.getArtist());
             this.number.add(album.getNumberOfSongs());
             this.albumArt.add(album.getAlbumArt());
-            viewpagerPos = 1;
+            viewpagerPos = SlideViewPagerAdapter.ALBUM_VIEW;
         }
     }
 
@@ -84,7 +92,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
             //todo what image for artists
             this.albumArt.add(null);
         }
-        viewpagerPos = 4;
+        viewpagerPos = SlideViewPagerAdapter.ARTIST_VIEW;
     }
 
     /**
@@ -100,7 +108,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
             //todo what images for playlist
             this.albumArt.add(null);
         }
-        viewpagerPos = 5;
+        viewpagerPos = SlideViewPagerAdapter.PLAYLIST_VIEW;
     }
 
 
@@ -108,11 +116,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     public CardViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CardView cv = (CardView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_album, parent, false);
+        ctxt = parent.getContext();
         return new ViewHolder(cv);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         CardView cardView = holder.cardView;
         final ImageView imageView = (ImageView)cardView.findViewById(R.id.albumArt);
 
@@ -126,9 +135,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         TextView tvFirstTitle = (TextView)cardView.findViewById(R.id.firstTitle);
         TextView tvSecondTitle = (TextView)cardView.findViewById(R.id.secondTitle);
         TextView tvNumberOfSong = (TextView)cardView.findViewById(R.id.numberOfSong);
+        final ImageView overflow = (ImageView) cardView.findViewById(R.id.overflow);
         tvFirstTitle.setText(firstTitle.get(position));
         tvSecondTitle.setText(secondTitle.get(position));
-        if (viewpagerPos == 5)
+        if (viewpagerPos == SlideViewPagerAdapter.PLAYLIST_VIEW)
             tvSecondTitle.setVisibility(View.GONE);
         tvNumberOfSong.setText(String.valueOf(number.get(position)) + ((number.get(position) == 1)? " Song": " Songs"));
         cardView.setOnClickListener(new View.OnClickListener() {
@@ -142,16 +152,17 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                 // Transfer to musicplayer with intent
 
                 switch (viewpagerPos){
-                    case 1:  //Get Album
+                    case SlideViewPagerAdapter.ALBUM_VIEW:  //Get Album
                         songArrayList = MusicHelper.getSongListByAlbum(ctxt, _id.get(position));
                         break;
-                    case 4:  //Get Artist
+                    case SlideViewPagerAdapter.ARTIST_VIEW:  //Get Artist
                         songArrayList = MusicHelper.getSongListByArtist(ctxt, _id.get(position));
                         break;
-                    case 5:  //Get Playlist
+                    case SlideViewPagerAdapter.PLAYLIST_VIEW:  //Get Playlist
                         songArrayList = new DBHelper(ctxt).getSongArrayListFromPlayList(_id.get(position));
                         break;
                 }
+
 
                 //to prevent music player from starting with zero songlist
                 if (songArrayList.size() == 0)
@@ -167,11 +178,18 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
             }
         });
 
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopupMenu(holder.overflow);
+            }
+        });
+
         cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 DBHelper dbHelper = new DBHelper(v.getContext());
-                if (viewpagerPos == 5) {
+                if (viewpagerPos == SlideViewPagerAdapter.PLAYLIST_VIEW) {
                     dbHelper.deletePlaylist(_id.get(position));
 
                     try {
@@ -191,5 +209,45 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     @Override
     public int getItemCount() {
         return firstTitle.size();
+    }
+
+
+    /**
+     *
+     * Showing popup menu when tapping on 3 dots
+     */
+    private void showPopupMenu(View view) {
+        // inflate menu
+        PopupMenu popup = new PopupMenu(ctxt, view);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.menu_album, popup.getMenu());
+        popup.setOnMenuItemClickListener(new MyMenuItemClickListener());
+        popup.show();
+    }
+
+    /**
+     * Click listener for popup menu items
+     */
+    class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
+
+        public MyMenuItemClickListener() {
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.action_add_playlist:
+                    Toast.makeText(ctxt, "Add to playlist", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.action_remove_playlist:
+                    Toast.makeText(ctxt, "Remove from playlist", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.action_edit_playlist:
+                    Toast.makeText(ctxt, "Edit playlist", Toast.LENGTH_SHORT).show();
+                    return true;
+                default:
+            }
+            return false;
+        }
     }
 }
