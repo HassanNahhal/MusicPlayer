@@ -11,6 +11,8 @@ import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -23,6 +25,7 @@ import android.widget.MediaController;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Song;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,6 +42,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     static private ArrayList<Song> songList;
     private ListView songView;
     private ImageView albumImage;
+    private SlidingUpPanelLayout mLayout;
+
     //music service class
     private MusicService musicSrv;
     //intent to the service
@@ -53,6 +58,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
+//        setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
+
         songView = (ListView)findViewById(R.id.song_list);
 
         Intent intent = getIntent();
@@ -70,9 +77,29 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
 
         SongAdapter adapter = new SongAdapter(this, songList);
         songView.setAdapter(adapter);
-        if (controller == null) {
-            setupController();
-        }
+        mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+        mLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+                Log.i(TAG, "onPanelSlide, offset " + slideOffset);
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                Log.i(TAG, "onPanelStateChanged " + newState);
+            }
+        });
+        mLayout.setFadeOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            }
+        });
+
+        setupController();
+
+        mLayout.setAnchorPoint(0.7f);
+        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
     }
 
 
@@ -121,21 +148,21 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
         musicSrv.playSong();
         if(playbackPaused){
+            setupController();
             playbackPaused=false;
         }
 
         albumImage =  (ImageView) findViewById(R.id.albumImage);
         albumImage.setImageBitmap(Bitmap.createScaledBitmap(musicSrv.currentArtwork, albumImage.getHeight(), albumImage.getWidth(), true));
 
-        controller.show(3000);
+        controller.show(0);
     }
 
 
     @Override
     protected void onPause(){
         super.onPause();
-        paused=true;
-    }
+      }
 
     /**
      * This will ensure that the controller displays when the user returns to the app
@@ -159,6 +186,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
 
     @Override
     protected void onStop() {
+        controller.hide();
         super.onStop();
     }
 
@@ -184,7 +212,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
         controller.setMediaPlayer(this);
 
         //set
-        controller.setAnchorView(findViewById(R.id.playerlayout));
+        controller.setAnchorView(findViewById(R.id.player_attach1));
         controller.setEnabled(true);
     }
 
@@ -195,7 +223,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             setupController();
             playbackPaused=false;
         }
-        controller.show(3000);
+        controller.show(0);
     }
 
     //play previous
@@ -205,13 +233,13 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             setupController();
             playbackPaused=false;
         }
-        controller.show(3000);
+        controller.show(0);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         //the MediaController will hide after 3 seconds - tap the screen to make it appear again
-        controller.show();
+        controller.show(0);
         return false;
     }
 
@@ -250,13 +278,14 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
 
     @Override
     public boolean isPlaying() {
-        return musicSrv != null && musicBound && musicSrv.isPng();
+        if(musicSrv!=null && musicBound)
+            return musicSrv.isPng();
+        return false;
     }
 
     @Override
     public int getBufferPercentage() {
-        //todo using percentage to move seekbar
-        return 0;
+         return 0;
     }
 
     @Override

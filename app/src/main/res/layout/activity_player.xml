@@ -1,24 +1,59 @@
-<LinearLayout
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    tools:context=".ui.PlayerActivity"
-    android:id="@+id/playerlayout">
-
-    <ImageView
-        android:id="@+id/albumImage"
+    xmlns:app="http://schemas.android.com/tools"
+    android:id="@+id/sliding_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    sothree:umanoScrollableView="@+id/song_list"
+    sothree:umanoParallaxOffset="100dp"
+    sothree:umanoOverlay="true"
+    sothree:umanoDragView="@+id/dragView"
+    sothree:umanoPanelHeight="200dp"
+    sothree:umanoShadowHeight="0dp">
+    <!-- MAIN CONTENT -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:scaleType="center"
-        android:contentDescription="@string/albumart"
-        android:src="@drawable/album_art"
-        android:transitionName="@string/albumart"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <ImageView
+            android:id="@+id/albumImage"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:scaleType="centerCrop"
+            android:gravity="center"
+            android:contentDescription="@string/albumart"
+            android:src="@drawable/album_art"
+            android:transitionName="@string/albumart"/>
+    </FrameLayout>
 
-    <ListView
-        android:id="@+id/song_list"
+    <!-- SLIDING LAYOUT -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </ListView>
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="false"
+        android:background="#ffffff"
+        android:id="@+id/dragView">
+        <ListView
+            android:id="@+id/song_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </ListView>
+        <FrameLayout
+            android:id="@+id/player_attach1"
+            android:layout_below="@id/song_list"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+        </FrameLayout>
+        <FrameLayout
+            android:id="@+id/player_attach"
+            android:layout_below="@id/player_attach1"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+        </FrameLayout>
+    </RelativeLayout>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

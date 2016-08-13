@@ -79,7 +79,7 @@ public class Play_audio_example extends ListActivity
 
         prevButton.setOnClickListener(onButtonClick);
 
-        setStatusBarTranslucent(true);
+       // setStatusBarTranslucent(true);
 
     }
 
