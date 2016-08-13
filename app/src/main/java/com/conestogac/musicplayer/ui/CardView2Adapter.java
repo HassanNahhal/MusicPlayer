@@ -4,14 +4,18 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.CardView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Genre;
@@ -35,13 +39,15 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
     private ArrayList<Song> songArrayList = new ArrayList<Song>();
     private int viewPagerPos = 0;
     private File file;
-
+    private Context ctxt;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
+        private ImageView overflow;
         public ViewHolder(CardView v) {
             super(v);
             cardView=v;
+            overflow = (ImageView) v.findViewById(R.id.overflow);
         }
     }
 
@@ -61,11 +67,12 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
     public CardView2Adapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CardView cv = (CardView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_album2, parent, false);
+        ctxt = parent.getContext();
         return new ViewHolder(cv);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         CardView cardView = holder.cardView;
         final ImageView imageView = (ImageView)cardView.findViewById(R.id.albumArt);
 
@@ -81,6 +88,14 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
         imageView.setContentDescription(firstTitle.get(position));
         TextView tvFirstTitle = (TextView)cardView.findViewById(R.id.firstTitle);
         tvFirstTitle.setText(firstTitle.get(position));
+
+        holder.overflow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopupMenu(holder.overflow);
+            }
+        });
+
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,5 +126,44 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
     @Override
     public int getItemCount() {
         return firstTitle.size();
+    }
+
+    /**
+     *
+     * Showing popup menu when tapping on 3 dots
+     */
+    private void showPopupMenu(View view) {
+        // inflate menu
+        PopupMenu popup = new PopupMenu(ctxt, view);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.menu_album, popup.getMenu());
+        popup.setOnMenuItemClickListener(new MyMenuItemClickListener());
+        popup.show();
+    }
+
+    /**
+     * Click listener for popup menu items
+     */
+    class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
+
+        public MyMenuItemClickListener() {
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.action_add_playlist:
+                    Toast.makeText(ctxt, "Add to playlist", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.action_remove_playlist:
+                    Toast.makeText(ctxt, "Remove from playlist", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.action_edit_playlist:
+                    Toast.makeText(ctxt, "Edit playlist", Toast.LENGTH_SHORT).show();
+                    return true;
+                default:
+            }
+            return false;
+        }
     }
 }

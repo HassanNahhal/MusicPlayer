@@ -78,8 +78,8 @@ public class LibraryViewFragment  extends Fragment {
 
                 ArrayList <Song> songList = new ArrayList<>();
                 songList.add(selectedSong);
-                int FragmentPosition=getArguments().getInt(KEY_POSITION, 0);
-                if (FragmentPosition == SlideViewPagerAdapter.ALBUM_VIEW) {
+                int FragmentPosition=getArguments().getInt(KEY_POSITION, 0) + 1;   //there's one difference between keyposition and view definition
+                if (FragmentPosition == SlideViewPagerAdapter.LIBRARY_VIEW) {
                     Intent gotoMusicPlayer = new Intent(ctxt, PlayerActivity.class);
                     View sharedView = result.findViewById(R.id.albumArt);
                     String transitionName = ctxt.getString(R.string.albumart);

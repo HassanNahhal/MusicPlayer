@@ -65,10 +65,10 @@
             android:layout_below="@id/secondTitle"/>
         <ImageView
             android:id="@+id/overflow"
-            android:layout_width="10dp"
+            android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginTop="7dp"
-            android:layout_marginRight="3dp"
+            android:layout_marginRight="5dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_more_vert_black_24dp"
             android:layout_gravity="right"
