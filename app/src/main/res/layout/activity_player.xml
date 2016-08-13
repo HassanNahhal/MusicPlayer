@@ -4,7 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    tools:context=".ui.PlayerActivity" >
+    tools:context=".ui.PlayerActivity"
+    android:id="@+id/playerlayout">
 
     <ImageView
         android:id="@+id/albumImage"

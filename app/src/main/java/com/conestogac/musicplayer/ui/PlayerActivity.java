@@ -13,6 +13,7 @@ import android.os.Bundle;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 
 import android.widget.ImageView;
@@ -44,7 +45,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     private Intent playIntent;
     // a flag to keep track of whether the Activity class is bound to the Service class or not
     private boolean musicBound=false;
-    private MusicController controller;
+    private MediaController controller;
     private boolean paused=false;
     private boolean playbackPaused=false;
 
@@ -58,7 +59,6 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
         if(intent.hasExtra(EXTRA_SONGLIST)) {
             songList = (ArrayList<Song>) getIntent().getExtras().get(EXTRA_SONGLIST);
         }
-        setupController();
 
         Collections.sort(songList, new Comparator<Song>(){
             public int compare(Song a, Song b){
@@ -70,6 +70,9 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
 
         SongAdapter adapter = new SongAdapter(this, songList);
         songView.setAdapter(adapter);
+        if (controller == null) {
+            setupController();
+        }
     }
 
 
@@ -118,16 +121,14 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
         musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
         musicSrv.playSong();
         if(playbackPaused){
-            setupController();
             playbackPaused=false;
         }
 
         albumImage =  (ImageView) findViewById(R.id.albumImage);
         albumImage.setImageBitmap(Bitmap.createScaledBitmap(musicSrv.currentArtwork, albumImage.getHeight(), albumImage.getWidth(), true));
 
-        controller.show(0);
+        controller.show(3000);
     }
-
 
 
     @Override
@@ -142,10 +143,6 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     @Override
     protected void onResume(){
         super.onResume();
-        if(paused){
-            setupController();
-            paused=false;
-        }
     }
 
 
@@ -162,7 +159,6 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
 
     @Override
     protected void onStop() {
-        controller.hide();
         super.onStop();
     }
 
@@ -172,7 +168,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
      */
     public void setupController(){
         //set the controller up
-        controller = new MusicController(this);
+        controller = new MediaController(this);
         controller.setPrevNextListeners(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -188,7 +184,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
         controller.setMediaPlayer(this);
 
         //set
-        controller.setAnchorView(findViewById(R.id.song_list));
+        controller.setAnchorView(findViewById(R.id.playerlayout));
         controller.setEnabled(true);
     }
 
@@ -199,7 +195,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             setupController();
             playbackPaused=false;
         }
-        controller.show(0);
+        controller.show(3000);
     }
 
     //play previous
@@ -209,7 +205,14 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             setupController();
             playbackPaused=false;
         }
-        controller.show(0);
+        controller.show(3000);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        //the MediaController will hide after 3 seconds - tap the screen to make it appear again
+        controller.show();
+        return false;
     }
 
     @Override
@@ -270,7 +273,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     @Override
     public int getDuration() {
         if(musicSrv!=null && musicBound && musicSrv.isPng())
-        return musicSrv.getDur();
+            return musicSrv.getDur();
         else return 0;
     }
 

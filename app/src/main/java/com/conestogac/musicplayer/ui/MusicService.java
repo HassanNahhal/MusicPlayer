@@ -66,16 +66,18 @@ public class MusicService extends Service implements
 
     // Indicates the state our service:
     enum State {
-        Retrieving,     // the MediaRetriever is retrieving music
-        Stopped,        // media player is stopped and not prepared to play
+        Idle,           // the MediaRetriever is retrieving music
+        Innitialized,   // After reset()
         Preparing,      // media player is preparing...
+        Prepared,       // media player is prepared
         Playing,        // playback active (media player ready!). (but the media player may actually be
                         // paused in this state if we don't have audio focus. But we stay in this state
                         // so that we know we have to resume playback once we get focus back)
-        Paused          // playback paused (media player ready!)
+        Paused,         // playback paused (media player ready!)
+        Stopped,        // media player is stopped and not prepared to play
     }
 
-    State mState = State.Retrieving;
+    State mState = State.Idle;
 
 
 
@@ -177,6 +179,8 @@ public class MusicService extends Service implements
         //start by resetting the MediaPlayer
         // since we will also use this code when the user is playing subsequent songs
         player.reset();
+        mState = State.Innitialized;
+
 
         //get the song from the list, extract the ID for it using its Song object, and model this as a URI
         playSong = songs.get(songPosn);
@@ -196,7 +200,7 @@ public class MusicService extends Service implements
         }
 
         currentArtwork = MusicHelper.getALbumArtFromSongID(this.getBaseContext(), playSong.getAlbumId());
-
+        mState = State.Preparing;
         //calling the asynchronous method of the MediaPlayer to prepare it
         //When the MediaPlayer is prepared, the onPrepared method will be executed
         player.prepareAsync();
@@ -209,7 +213,9 @@ public class MusicService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         //start playback
+        mState = State.Prepared;
         mediaPlayer.start();
+        mState = State.Playing;
         Intent notIntent = new Intent(this, PlayerActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
