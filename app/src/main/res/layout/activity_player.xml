@@ -1,22 +1,30 @@
 <com.sothree.slidinguppanel.SlidingUpPanelLayout
     xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/tools"
     android:id="@+id/sliding_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
     sothree:umanoScrollableView="@+id/song_list"
-    sothree:umanoParallaxOffset="100dp"
+    sothree:umanoParallaxOffset="200dp"
     sothree:umanoOverlay="true"
     sothree:umanoDragView="@+id/dragView"
     sothree:umanoPanelHeight="200dp"
     sothree:umanoShadowHeight="0dp">
+
     <!-- MAIN CONTENT -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <android.support.v7.widget.Toolbar
+            xmlns:sothree="http://schemas.android.com/apk/res-auto"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/main_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ActionBar"
+            android:background="?attr/colorPrimary"/>
         <ImageView
             android:id="@+id/albumImage"
             android:layout_width="match_parent"
@@ -29,7 +37,7 @@
     </FrameLayout>
 
     <!-- SLIDING LAYOUT -->
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -40,20 +48,18 @@
         <ListView
             android:id="@+id/song_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:drawSelectorOnTop="false"
+            android:transitionGroup="false"
+            android:stackFromBottom="false"
+            android:nestedScrollingEnabled="false"
+            android:focusable="true"
+            android:choiceMode="singleChoice"
+            android:clickable="true"
+            android:fastScrollAlwaysVisible="false"
+            android:foregroundTint="@color/listview_color">
         </ListView>
-        <FrameLayout
-            android:id="@+id/player_attach1"
-            android:layout_below="@id/song_list"
-            android:layout_width="match_parent"
-            android:layout_height="40dp">
-        </FrameLayout>
-        <FrameLayout
-            android:id="@+id/player_attach"
-            android:layout_below="@id/player_attach1"
-            android:layout_width="match_parent"
-            android:layout_height="40dp">
-        </FrameLayout>
-    </RelativeLayout>
+     </LinearLayout>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

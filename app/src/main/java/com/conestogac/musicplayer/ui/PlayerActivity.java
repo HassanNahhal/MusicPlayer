@@ -18,14 +18,19 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import android.widget.ListView;
 import android.widget.MediaController;
+import android.widget.TextView;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Song;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,8 +63,15 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-//        setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
+        setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
+        Window window = this.getWindow();
 
+        // clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        // finally change the color
+        window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimary));
         songView = (ListView)findViewById(R.id.song_list);
 
         Intent intent = getIntent();
@@ -98,7 +110,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
 
         setupController();
 
-        mLayout.setAnchorPoint(0.7f);
+        mLayout.setAnchorPoint(0.1f);
         mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
     }
 
@@ -212,7 +224,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
         controller.setMediaPlayer(this);
 
         //set
-        controller.setAnchorView(findViewById(R.id.player_attach1));
+        controller.setAnchorView(findViewById(R.id.song_list));
         controller.setEnabled(true);
     }
 
