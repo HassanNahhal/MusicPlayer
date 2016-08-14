@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.conestogac.musicplayer.R;
@@ -37,7 +38,7 @@ public class MusicService extends Service implements
     //media player
     private MediaPlayer player;
     private static MusicService mInstance = null;
-   private  Song playSong;
+    private  Song playSong;
     //song list
     private ArrayList<Song> songs;
     //current position
@@ -149,7 +150,7 @@ public class MusicService extends Service implements
     @Override
     public void onCompletion(MediaPlayer mp) {
         if (player.getCurrentPosition() > 0) {
-            mp.reset();
+    //        mp.reset();
             playNext();
         }
     }
@@ -200,6 +201,9 @@ public class MusicService extends Service implements
         }
 
         currentArtwork = MusicHelper.getALbumArtFromSongID(this.getBaseContext(), playSong.getAlbumId());
+        //send title to activity for updating song title & artwork
+        sendSongUpdatedMessageToActivity();
+
         mState = State.Preparing;
         //calling the asynchronous method of the MediaPlayer to prepare it
         //When the MediaPlayer is prepared, the onPrepared method will be executed
@@ -321,5 +325,20 @@ public class MusicService extends Service implements
 
     public boolean getShuffle(){
         return shuffle;
+    }
+
+    /**
+     * To send event to activity to update song title and album when song is updated within the service
+     * This is Localbroadcast which is much simpler than global broadcast
+     * https://developer.android.com/reference/android/support/v4/content/LocalBroadcastManager.html
+     */
+    private void sendSongUpdatedMessageToActivity() {
+        Intent intent = new Intent("songUpdated");
+        sendLocationBroadcast(intent);
+    }
+
+    private void sendLocationBroadcast(Intent intent){
+        intent.putExtra("songPos", songPosn);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 }

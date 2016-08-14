@@ -1,18 +1,25 @@
 package com.conestogac.musicplayer.ui;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 
 import android.graphics.Bitmap;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,11 +27,15 @@ import android.view.View;
 
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import android.widget.ListView;
 import android.widget.MediaController;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Song;
@@ -59,36 +70,52 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     private boolean paused=false;
     private boolean playbackPaused=false;
 
+    //textswitcher to display song title
+    private TextSwitcher textSwitcher;
+
+    //local broadcast receiver to get message from service
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            int songPos = intent.getIntExtra("songPos", 0);
+            updateSongInfomation(songPos);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-        setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
-        Window window = this.getWindow();
 
-        // clear FLAG_TRANSLUCENT_STATUS flag:
+        //set statusbar color
+        Window window = this.getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        // finally change the color
         window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimary));
+
+        //get listview pointer which will have song list
         songView = (ListView)findViewById(R.id.song_list);
 
+        //get songlist from intent and sort
         Intent intent = getIntent();
         if(intent.hasExtra(EXTRA_SONGLIST)) {
             songList = (ArrayList<Song>) getIntent().getExtras().get(EXTRA_SONGLIST);
         }
-
         Collections.sort(songList, new Comparator<Song>(){
             public int compare(Song a, Song b){
                 return a.getTitle().compareTo(b.getTitle());
             }
         });
 
+        //get album image pointer
         albumImage = (ImageView) findViewById(R.id.albumImage);
 
+        //set song adapter
         SongAdapter adapter = new SongAdapter(this, songList);
         songView.setAdapter(adapter);
+
+        //setup sliding panel
         mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
         mLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
@@ -109,9 +136,41 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
         });
 
         setupController();
-
         mLayout.setAnchorPoint(0.1f);
         mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+
+        //setup text switcher
+        textSwitcher = (TextSwitcher) findViewById(R.id.text_switcher);
+
+        textSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
+
+            @Override
+            public View makeView() {
+                TextView textview = new TextView(getApplicationContext());
+                textview.setTextColor(Color.WHITE);
+                textview.setBackgroundColor(Color.DKGRAY);
+                textview.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+                textview.setTypeface(null, Typeface.ITALIC);
+                textview.setGravity(Gravity.CENTER);
+
+                int padding_in_dp = 3;
+                final float scale = getResources().getDisplayMetrics().density;
+                int padding_in_px = (int) (padding_in_dp * scale + 0.5f);
+
+                textview.setPadding(0, 0, 0, padding_in_px);
+                return textview;
+            }
+        });
+        Animation in = AnimationUtils.loadAnimation(this,
+                android.R.anim.slide_in_left);
+        Animation out = AnimationUtils.loadAnimation(this,
+                android.R.anim.slide_out_right);
+        textSwitcher.setInAnimation(in);
+        textSwitcher.setOutAnimation(out);
+
+        //resgister local broadcast receiver to get event from service
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mMessageReceiver, new IntentFilter("songUpdated"));
     }
 
 
@@ -157,16 +216,27 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
      * Adding an onClick attribute to the layout for each item in the song list.
      */
     public void songPicked(View view){
-        musicSrv.setSong(Integer.parseInt(view.getTag().toString()));
+        int songIndex = Integer.parseInt(view.getTag().toString());
+        musicSrv.setSong(songIndex);
         musicSrv.playSong();
         if(playbackPaused){
             setupController();
             playbackPaused=false;
         }
 
+        updateSongInfomation(songIndex);
+
+        controller.show(0);
+    }
+
+    private void updateSongInfomation(int index) {
         albumImage =  (ImageView) findViewById(R.id.albumImage);
         albumImage.setImageBitmap(Bitmap.createScaledBitmap(musicSrv.currentArtwork, albumImage.getHeight(), albumImage.getWidth(), true));
-
+        textSwitcher.setText(songList.get(index).getTitle());
+        if(playbackPaused){
+            setupController();
+            playbackPaused=false;
+        }
         controller.show(0);
     }
 
@@ -190,9 +260,11 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
      */
     @Override
     protected void onDestroy() {
-        unbindService(musicConnection);
-        stopService(playIntent);
-        musicSrv=null;
+        if (musicBound) {
+            unbindService(musicConnection);
+            stopService(playIntent);
+            musicSrv = null;
+        }
         super.onDestroy();
     }
 
@@ -252,7 +324,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     public boolean onTouchEvent(MotionEvent event) {
         //the MediaController will hide after 3 seconds - tap the screen to make it appear again
         controller.show(0);
-        return false;
+        return true;
     }
 
     @Override
