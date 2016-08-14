@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
@@ -58,6 +59,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     static private ArrayList<Song> songList;
     private ListView songView;
     private ImageView albumImage;
+    private Point albumSize;
+
     private SlidingUpPanelLayout mLayout;
 
     //music service class
@@ -171,6 +174,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
         //resgister local broadcast receiver to get event from service
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mMessageReceiver, new IntentFilter("songUpdated"));
+
     }
 
 
@@ -189,6 +193,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             //pass list
             musicSrv.setList(songList);
             musicBound = true;
+            songPicked(null);
         }
 
         @Override
@@ -216,7 +221,14 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
      * Adding an onClick attribute to the layout for each item in the song list.
      */
     public void songPicked(View view){
-        int songIndex = Integer.parseInt(view.getTag().toString());
+        int songIndex;
+
+        if (view ==null) {
+            songIndex = 0;
+        } else {
+            songIndex = Integer.parseInt(view.getTag().toString());
+        }
+
         musicSrv.setSong(songIndex);
         musicSrv.playSong();
         if(playbackPaused){
@@ -230,8 +242,10 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     }
 
     private void updateSongInfomation(int index) {
-        albumImage =  (ImageView) findViewById(R.id.albumImage);
-        albumImage.setImageBitmap(Bitmap.createScaledBitmap(musicSrv.currentArtwork, albumImage.getHeight(), albumImage.getWidth(), true));
+        if (musicSrv == null) return;   //this is neeed, broadcast receiver is called when previous song is reset
+
+        if (musicBound && albumImage != null)
+            albumImage.setImageBitmap(Bitmap.createScaledBitmap(musicSrv.currentArtwork, albumImage.getHeight(), albumImage.getWidth(), true));
         textSwitcher.setText(songList.get(index).getTitle());
         if(playbackPaused){
             setupController();
@@ -381,6 +395,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     public void pause() {
         playbackPaused=true;
         musicSrv.pausePlayer();
+        controller.show(0);
     }
 
     @Override
