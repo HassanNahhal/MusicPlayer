@@ -59,7 +59,7 @@ public class LibraryViewFragment  extends Fragment {
         listView = (ListView) result.findViewById(R.id.listView);
         listView.setEmptyView(result.findViewById(R.id.empty_list_item));
 
-        readDataFromDB();
+        readDataFromDB(getArguments().getInt(KEY_POSITION, 0) + 1);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -120,11 +120,11 @@ public class LibraryViewFragment  extends Fragment {
         Database query can be a time consuming task ..
         so its safe to call database query in another thread
     */
-    private void readDataFromDB() {
+    private void readDataFromDB(final int pagePos) {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-            rcAdapter = new SongCursorAdapter(ctxt, MusicHelper.getAllSongAsCursor(ctxt), 0);
+            rcAdapter = new SongCursorAdapter(ctxt, MusicHelper.getAllSongAsCursor(ctxt), pagePos);
             listView.setAdapter(rcAdapter);
             }
         });

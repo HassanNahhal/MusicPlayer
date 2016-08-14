@@ -234,8 +234,10 @@ public class MusicService extends Service implements
                 .setContentTitle("Playing")
                 .setContentText(songTitle);
         Notification not = builder.build();
-
         startForeground(NOTIFY_ID, not);
+
+        //to update player's play/pause button. without this player shows play button firstly
+        sendSongUpdatedMessageToActivity();
     }
 
     /**
@@ -294,20 +296,38 @@ public class MusicService extends Service implements
         playSong();
     }
 
-    public int getPosn(){
+    public int getCurrentPosition(){
         return player.getCurrentPosition();
     }
 
-    public int getDur(){
+    public int getDuration(){
         return player.getDuration();
     }
 
-    public boolean isPng(){
+    public boolean isPlaying(){
         return player.isPlaying();
     }
 
     public void pausePlayer(){
         player.pause();
+
+        //to update status
+        Intent notIntent = new Intent(this, PlayerActivity.class);
+        notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendInt = PendingIntent.getActivity(this, 0,
+                notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification.Builder builder = new Notification.Builder(this);
+
+        builder.setContentIntent(pendInt)
+                .setSmallIcon(R.drawable.ic_play_circle_outline_black_24dp)
+                .setTicker(songTitle)
+                .setOngoing(true)
+                .setContentTitle("Pause")
+                .setContentText(songTitle);
+        Notification not = builder.build();
+
+        startForeground(NOTIFY_ID, not);
     }
 
     public void seek(int posn){
@@ -334,10 +354,6 @@ public class MusicService extends Service implements
      */
     private void sendSongUpdatedMessageToActivity() {
         Intent intent = new Intent("songUpdated");
-        sendLocationBroadcast(intent);
-    }
-
-    private void sendLocationBroadcast(Intent intent){
         intent.putExtra("songPos", songPosn);
         LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }

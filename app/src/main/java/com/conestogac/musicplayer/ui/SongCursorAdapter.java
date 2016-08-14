@@ -4,7 +4,10 @@ import android.content.Context;
 
 import android.database.Cursor;
 
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,6 +19,7 @@ import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.util.MusicHelper;
 
 import android.provider.MediaStore.Audio;
+import android.widget.Toast;
 
 
 /**
@@ -26,11 +30,13 @@ import android.provider.MediaStore.Audio;
 public class SongCursorAdapter extends CursorAdapter {
     private static final String TAG = "SongCursorAdapter";
     private Context ctxt;
+    private int viewPagePos;
 
     // Default constructor
     public SongCursorAdapter(Context context, Cursor cursor, int cflags) {
         super(context, cursor, 0);
         ctxt = context;
+        viewPagePos = cflags;   //save pageviwer's position
     }
 
 
@@ -50,6 +56,7 @@ public class SongCursorAdapter extends CursorAdapter {
         TextView title = (TextView) view.findViewById(R.id.song_title);
         TextView artist = (TextView) view.findViewById(R.id.song_artist);
         TextView duration = (TextView) view.findViewById(R.id.song_duration);
+        ImageView overflow = (ImageView) view.findViewById(R.id.overflow);
         String cur_duration = MusicHelper.milliSecondsToTimer(cursor.getLong(cursor.getColumnIndex(Audio.Media.DURATION)));
 
         ctxt = context;
@@ -58,6 +65,54 @@ public class SongCursorAdapter extends CursorAdapter {
         title.setText(cursor.getString(cursor.getColumnIndex(Audio.Media.TITLE)));
         artist.setText(cursor.getString(cursor.getColumnIndex(Audio.Media.ARTIST)));
         duration.setText(cur_duration);
+
+        overflow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopupMenu(view);
+            }
+        });
+
+        // In case of Tageditor, hide menu
+        if (viewPagePos == SlideViewPagerAdapter.TAG_EDITOR)
+            overflow.setVisibility(View.GONE);
+    }
+    /**
+     *
+     * Showing popup menu when tapping on 3 dots
+     */
+    private void showPopupMenu(View view) {
+        // inflate menu
+        PopupMenu popup = new PopupMenu(ctxt, view);
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.menu_album, popup.getMenu());
+        popup.setOnMenuItemClickListener(new MyMenuItemClickListener());
+        popup.show();
     }
 
+    /**
+     * Click listener for popup menu items
+     */
+    class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
+
+        public MyMenuItemClickListener() {
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch (menuItem.getItemId()) {
+                case R.id.action_add_playlist:
+                    Toast.makeText(ctxt, "Add to playlist", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.action_remove_playlist:
+                    Toast.makeText(ctxt, "Remove from playlist", Toast.LENGTH_SHORT).show();
+                    return true;
+                case R.id.action_edit_playlist:
+                    Toast.makeText(ctxt, "Edit playlist", Toast.LENGTH_SHORT).show();
+                    return true;
+                default:
+            }
+            return false;
+        }
+    }
 }

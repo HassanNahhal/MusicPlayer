@@ -58,6 +58,6 @@
             android:fastScrollAlwaysVisible="false"
             android:foregroundTint="@color/listview_color">
         </ListView>
-     </LinearLayout>
+      </LinearLayout>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

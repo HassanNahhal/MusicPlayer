@@ -17,7 +17,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -41,8 +40,6 @@ import android.widget.ViewSwitcher;
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Song;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +66,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     private Intent playIntent;
     // a flag to keep track of whether the Activity class is bound to the Service class or not
     private boolean musicBound=false;
-    private MediaController controller;
+    private MediaController musicController;
     private boolean paused=false;
     private boolean playbackPaused=false;
 
@@ -139,12 +136,11 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
         });
 
         setupController();
-        mLayout.setAnchorPoint(0.1f);
+        mLayout.setAnchorPoint(0.2f);
         mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
 
-        //setup text switcher
+        //setup text switcher viewer &animation
         textSwitcher = (TextSwitcher) findViewById(R.id.text_switcher);
-
         textSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
 
             @Override
@@ -193,6 +189,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             //pass list
             musicSrv.setList(songList);
             musicBound = true;
+
+            //music service bind, start player with 1st song
             songPicked(null);
         }
 
@@ -223,6 +221,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     public void songPicked(View view){
         int songIndex;
 
+        //if it is called at initial, set song index as 0
         if (view ==null) {
             songIndex = 0;
         } else {
@@ -237,12 +236,17 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
         }
 
         updateSongInfomation(songIndex);
-
-        controller.show(0);
+        musicController.show(0);
     }
 
+    /**
+     * To update song title at textswitcher and album art image
+     */
+
     private void updateSongInfomation(int index) {
-        if (musicSrv == null) return;   //this is neeed, broadcast receiver is called when previous song is reset
+        if (musicSrv == null) {
+            return;   //this is neeed, broadcast receiver is called when previous song is reset
+        }
 
         if (musicBound && albumImage != null)
             albumImage.setImageBitmap(Bitmap.createScaledBitmap(musicSrv.currentArtwork, albumImage.getHeight(), albumImage.getWidth(), true));
@@ -251,7 +255,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             setupController();
             playbackPaused=false;
         }
-        controller.show(0);
+        musicController.show(0);
     }
 
 
@@ -261,7 +265,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
       }
 
     /**
-     * This will ensure that the controller displays when the user returns to the app
+     * This will ensure that the musicController displays when the user returns to the app
      */
     @Override
     protected void onResume(){
@@ -270,7 +274,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
 
 
     /**
-     * This will ensure that the controller displays when the user returns to the app
+     * This will ensure that the musicController displays when the user returns to the app
      */
     @Override
     protected void onDestroy() {
@@ -284,18 +288,17 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
 
     @Override
     protected void onStop() {
-        controller.hide();
         super.onStop();
     }
 
     /**
-     * Set up controller and set onClick on controller
+     * Set up musicController and set onClick on musicController
      *
      */
     public void setupController(){
-        //set the controller up
-        controller = new MediaController(this);
-        controller.setPrevNextListeners(new View.OnClickListener() {
+        //set the musicController up
+        musicController = new MediaController(this);
+        musicController.setPrevNextListeners(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 playNext();
@@ -307,11 +310,11 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             }
         });
 
-        controller.setMediaPlayer(this);
+        musicController.setMediaPlayer(this);
 
-        //set
-        controller.setAnchorView(findViewById(R.id.song_list));
-        controller.setEnabled(true);
+        //set musicController's anchor view
+        musicController.setAnchorView(findViewById(R.id.dragView));
+        musicController.setEnabled(true);
     }
 
     //play next
@@ -321,7 +324,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             setupController();
             playbackPaused=false;
         }
-        controller.show(0);
+        musicController.show(0);
     }
 
     //play previous
@@ -331,14 +334,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             setupController();
             playbackPaused=false;
         }
-        controller.show(0);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        //the MediaController will hide after 3 seconds - tap the screen to make it appear again
-        controller.show(0);
-        return true;
+        musicController.show(0);
     }
 
     @Override
@@ -364,9 +360,11 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     @Override
     public int getCurrentPosition() {
         //to avoid various exceptions that may occur when using the MediaPlayer and MediaController classes
-        if(musicSrv!=null && musicBound && musicSrv.isPng())
-            return musicSrv.getPosn();
-        else return 0;
+        if(musicSrv!=null && musicBound && musicSrv.isPlaying()) {
+            return musicSrv.getCurrentPosition();
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -377,7 +375,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     @Override
     public boolean isPlaying() {
         if(musicSrv!=null && musicBound)
-            return musicSrv.isPng();
+            return musicSrv.isPlaying();
         return false;
     }
 
@@ -393,15 +391,15 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
 
     @Override
     public void pause() {
+        musicController.show(0);
         playbackPaused=true;
         musicSrv.pausePlayer();
-        controller.show(0);
     }
 
     @Override
     public int getDuration() {
-        if(musicSrv!=null && musicBound && musicSrv.isPng())
-            return musicSrv.getDur();
+        if(musicSrv!=null && musicBound && musicSrv.isPlaying())
+            return musicSrv.getDuration();
         else return 0;
     }
 
