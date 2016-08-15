@@ -161,7 +161,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     //Get all list
-    public ArrayList<Playlist> getAllPlaylists() {
+    public ArrayList<Playlist> getAllPlaylistsAsArrayList() {
         ArrayList<Playlist> playList = new ArrayList<>();
         int _idColumn;
         int nameColumn;
@@ -202,29 +202,69 @@ public class DBHelper extends SQLiteOpenHelper {
 
     //Playlist_Song~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //Insert playlist
-    public Integer insertPlaylistSong(int playlist_id, int song_id) {
-        Long retValue;
+    public Integer insertPlaylistSong(int playlist_id, ArrayList<Song> songs) {
+        int index = 0;
         SQLiteDatabase db = getWritableDatabase();
 
-        ContentValues cv = new ContentValues();
-        cv.put(PLAYLIST_SONG_FK_PLAYLIST_ID, playlist_id);
-        cv.put(PLAYLIST_SONG_FK_SONG_ID, song_id);
-        retValue = db.insert(TABLE_PLAYLIST_SONG, null, cv);
+        //insert data at association table
+        for (Song song: songs) {
+            ContentValues cv_playlist_song = new ContentValues();
+            cv_playlist_song.put(PLAYLIST_SONG_FK_PLAYLIST_ID, playlist_id);
+            cv_playlist_song.put(PLAYLIST_SONG_FK_SONG_ID, song.getID());
+            if (db.insert(TABLE_PLAYLIST_SONG, null, cv_playlist_song) != -1)
+                index ++;
+        }
+
+        //get the old number of to add new number of song
+        String sqlQuery =
+                "SELECT "+ PLAYLIST_NUM_SONGS + " FROM " + TABLE_PLAYLIST +
+                        " WHERE _id=" + String.valueOf(playlist_id);
+
+        Cursor res = db.rawQuery(sqlQuery, null);
+        try {
+            res.moveToFirst();
+            index += res.getInt(res.getColumnIndexOrThrow(PLAYLIST_NUM_SONGS));
+        } catch (Exception e) {
+            Log.w(TAG, "Invalid Playlist");
+        }
+        //Close cursor, db
+        res.close();
+
+        //add number of song and update db
+        ContentValues cv_playlist = new ContentValues();
+        cv_playlist.put(PLAYLIST_NUM_SONGS, index);
+        db.update(TABLE_PLAYLIST, cv_playlist, "_id = ? ",
+                new String[]{Integer.toString(playlist_id)});
 
         db.close();
-        return retValue.intValue();
+        return index;
     }
 
+    /**
+     * getSongArrayListFromPlayList
+     * get all song with playlist Id
+     * @param id: playlist ID
+     * @return
+     */
     public ArrayList<Song> getSongArrayListFromPlayList(Integer id) {
         ArrayList<Song> songList = new ArrayList<>();
         Playlist playlist;
         Song thisSong;
         int songId;
+        SQLiteDatabase db = getReadableDatabase();
 
-        Cursor musicCursor = getSonglistFromPlayListId(id);
+        //get songid from playlist localdb
+        String sqlQuery =
+                "SELECT * FROM " +
+                        TABLE_PLAYLIST_SONG +
+                        " WHERE " + PLAYLIST_SONG_FK_PLAYLIST_ID + "=" + String.valueOf(id);
+
 
         Log.d(TAG, "getPlaylist() _ID: "+id);
+        //get songlist from media storage based on id
+        Cursor musicCursor = db.rawQuery(sqlQuery, null);
         if (musicCursor != null && musicCursor.getCount() > 0) {
+            musicCursor.moveToFirst();
             do {
                 songId = musicCursor.getInt(musicCursor.getColumnIndex(DBHelper.PLAYLIST_SONG_FK_SONG_ID));
                 thisSong = MusicHelper.getSongFromId(ctxt, songId);
@@ -236,7 +276,11 @@ public class DBHelper extends SQLiteOpenHelper {
         return songList;
     }
 
-    //Get data using ID
+    /**
+     * Get data using ID
+     * @param id
+     * @return
+     */
     public Cursor getSonglistFromPlayListId(Integer id) {
         Playlist playlist;
         SQLiteDatabase db = getReadableDatabase();

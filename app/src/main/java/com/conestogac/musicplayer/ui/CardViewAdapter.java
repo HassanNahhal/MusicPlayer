@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.Image;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +18,6 @@ import android.view.ViewGroup;
 import android.support.v7.widget.CardView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Album;
@@ -40,11 +38,11 @@ import java.util.ArrayList;
  */
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHolder> {
     private final static String TAG = "CardViewAdapter";
-    private ArrayList<Integer> _id  = new ArrayList<>();
-    private ArrayList<String> firstTitle = new ArrayList<>();
-    private ArrayList<String> secondTitle  = new ArrayList<>();
-    private ArrayList<String>  albumArt = new ArrayList<>();
-    private ArrayList<Integer> number  = new ArrayList<>();
+    private ArrayList<Integer> _ids = new ArrayList<>();
+    private ArrayList<String> firstTitles = new ArrayList<>();
+    private ArrayList<String> secondTitles = new ArrayList<>();
+    private ArrayList<String> albumArts = new ArrayList<>();
+    private ArrayList<Integer> numbers = new ArrayList<>();
     private ArrayList<Song> songArrayList = new ArrayList<>();
     private int viewpagerPos = 0;
     private Context ctxt;
@@ -66,19 +64,19 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     }
 
     public CardViewAdapter(ArrayList<String> title, ArrayList<Integer> number, ArrayList<String> imageIds){
-        this.firstTitle = title;
-        this.secondTitle = title;
-        this.number = number;
-        this.albumArt = imageIds;
+        this.firstTitles = title;
+        this.secondTitles = title;
+        this.numbers = number;
+        this.albumArts = imageIds;
     }
 
     public CardViewAdapter(ArrayList<Album> albumList){
         for (Album album : albumList) {
-            this._id.add(album.getID());
-            this.firstTitle.add(album.getTitle());
-            this.secondTitle.add(album.getArtist());
-            this.number.add(album.getNumberOfSongs());
-            this.albumArt.add(album.getAlbumArt());
+            this._ids.add(album.getID());
+            this.firstTitles.add(album.getTitle());
+            this.secondTitles.add(album.getArtist());
+            this.numbers.add(album.getNumberOfSongs());
+            this.albumArts.add(album.getAlbumArt());
             viewpagerPos = SlideViewPagerAdapter.ALBUM_VIEW;
         }
     }
@@ -88,13 +86,13 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
      */
     public CardViewAdapter(ArrayList<Artist> artistList, boolean dummy){
         for (Artist artist : artistList) {
-            this._id.add(artist.getID());
-            this.firstTitle.add(artist.getArtist());
-            this.secondTitle.add(String.valueOf(artist.getNumberOfAlbums()) +
+            this._ids.add(artist.getID());
+            this.firstTitles.add(artist.getArtist());
+            this.secondTitles.add(String.valueOf(artist.getNumberOfAlbums()) +
                     ((artist.getNumberOfAlbums() ==1)? " Album":" Albums" ));
-            this.number.add(artist.getNumberOfSongs());
+            this.numbers.add(artist.getNumberOfSongs());
             //todo what image for artists
-            this.albumArt.add(null);
+            this.albumArts.add(null);
         }
         viewpagerPos = SlideViewPagerAdapter.ARTIST_VIEW;
     }
@@ -106,12 +104,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         this.mAdapterCallback = callback;
         this.playListFragment = fragment;
         for (Playlist list : playList) {
-            this._id.add(list.getID());
-            this.firstTitle.add(list.getName());
-            this.secondTitle.add("");
-            this.number.add(list.getNumberOfSong());
+            this._ids.add(list.getID());
+            this.firstTitles.add(list.getName());
+            this.secondTitles.add("");
+            this.numbers.add(list.getNumberOfSong());
             //todo what images for playlist
-            this.albumArt.add(null);
+            this.albumArts.add(null);
         }
         viewpagerPos = SlideViewPagerAdapter.PLAYLIST_VIEW;
     }
@@ -131,21 +129,21 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         final ImageView imageView = (ImageView)cardView.findViewById(R.id.albumArt);
 
         //if albumart exist, image is loaded by using Glide, otherwise it will maintain default image
-        if (albumArt.get(position) != null) {
-            file = new java.io.File(albumArt.get(position));
+        if (albumArts.get(position) != null) {
+            file = new java.io.File(albumArts.get(position));
             GlideUtil.loadImageWithFilePath(file, imageView);
         }
 
-        imageView.setContentDescription(firstTitle.get(position));
+        imageView.setContentDescription(firstTitles.get(position));
         TextView tvFirstTitle = (TextView)cardView.findViewById(R.id.firstTitle);
         TextView tvSecondTitle = (TextView)cardView.findViewById(R.id.secondTitle);
         TextView tvNumberOfSong = (TextView)cardView.findViewById(R.id.numberOfSong);
         final ImageView overflow = (ImageView) cardView.findViewById(R.id.overflow);
-        tvFirstTitle.setText(firstTitle.get(position));
-        tvSecondTitle.setText(secondTitle.get(position));
+        tvFirstTitle.setText(firstTitles.get(position));
+        tvSecondTitle.setText(secondTitles.get(position));
         if (viewpagerPos == SlideViewPagerAdapter.PLAYLIST_VIEW)
             tvSecondTitle.setVisibility(View.GONE);
-        tvNumberOfSong.setText(String.valueOf(number.get(position)) + ((number.get(position) == 1)? " Song": " Songs"));
+        tvNumberOfSong.setText(String.valueOf(numbers.get(position)) + ((numbers.get(position) == 1)? " Song": " Songs"));
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,13 +156,13 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
 
                 switch (viewpagerPos){
                     case SlideViewPagerAdapter.ALBUM_VIEW:  //Get Album
-                        songArrayList = MusicHelper.getSongListByAlbum(ctxt, _id.get(position));
+                        songArrayList = MusicHelper.getSongListByAlbum(ctxt, _ids.get(position));
                         break;
                     case SlideViewPagerAdapter.ARTIST_VIEW:  //Get Artist
-                        songArrayList = MusicHelper.getSongListByArtist(ctxt, _id.get(position));
+                        songArrayList = MusicHelper.getSongListByArtist(ctxt, _ids.get(position));
                         break;
                     case SlideViewPagerAdapter.PLAYLIST_VIEW:  //Get Playlist
-                        songArrayList = new DBHelper(ctxt).getSongArrayListFromPlayList(_id.get(position));
+                        songArrayList = new DBHelper(ctxt).getSongArrayListFromPlayList(_ids.get(position));
                         break;
                 }
 
@@ -186,7 +184,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         holder.overflow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPopupMenu(holder.overflow, _id.get(position));
+                showPopupMenu(holder.overflow, _ids.get(position));
             }
         });
 
@@ -198,12 +196,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                     //Get confirm to delete
                     new AlertDialog.Builder(ctxt)
                             .setIconAttribute(android.R.attr.alertDialogIcon)
-                            .setTitle("Exit the receipt keeper")
+                            .setTitle(R.string.delete_playlist)
                             .setMessage(ctxt.getString(R.string.message_to_confirm_delete))
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    dbHelper.deletePlaylist(_id.get(position));
+                                    dbHelper.deletePlaylist(_ids.get(position));
                                     try {
                                         mAdapterCallback.onMethodCallback(position);
                                     } catch (ClassCastException exception) {
@@ -224,7 +222,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return firstTitle.size();
+        return firstTitles.size();
     }
 
 
@@ -260,19 +258,34 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
 
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
-            switch (menuItem.getItemId()) {
-                case R.id.action_add_playlist:
-                    Toast.makeText(ctxt, "Add to playlist", Toast.LENGTH_SHORT).show();
+            if (menuItem.getItemId() == R.id.action_add_playlist) {
+                switch (viewpagerPos) {
+                    case SlideViewPagerAdapter.ALBUM_VIEW:  //Get Album
+                        songArrayList = MusicHelper.getSongListByAlbum(ctxt, _id);
+                        break;
+                    case SlideViewPagerAdapter.ARTIST_VIEW:  //Get Artist
+                        songArrayList = MusicHelper.getSongListByArtist(ctxt, _id);
+                        break;
+                    case SlideViewPagerAdapter.PLAYLIST_VIEW:  //Get Playlist
+                        songArrayList = new DBHelper(ctxt).getSongArrayListFromPlayList(_id);
+                        break;
+                }
+                //to prevent music player from starting with zero songlist
+                if (songArrayList.size() == 0)
                     return true;
-
-                case R.id.action_edit_playlist:
-                    GetPlayListNameFragment getPlayListNameFragment = GetPlayListNameFragment.newInstance("Edit PlayList Name", this._id);
-
-                    getPlayListNameFragment.setTargetFragment(playListFragment, 300);
-                    getPlayListNameFragment.show(playListFragment.getFragmentManager(), "fragment_edit_name");
-                    return true;
-                default:
+                //set songlist and goto selecting playlist
+                Intent gotoSelectPlaylist = new Intent(ctxt, SelectAndAddToPlayList.class);
+                gotoSelectPlaylist.putExtra(PlayerActivity.EXTRA_SONGLIST, songArrayList);
+                ctxt.startActivity(gotoSelectPlaylist);
+                return true;
+            } else if (menuItem.getItemId() == R.id.action_edit_playlist) {
+                //call edit dialog fragement to get playlist name
+                GetPlayListNameFragment getPlayListNameFragment = GetPlayListNameFragment.newInstance("Edit PlayList Name", this._id);
+                getPlayListNameFragment.setTargetFragment(playListFragment, 300);
+                getPlayListNameFragment.show(playListFragment.getFragmentManager(), "fragment_edit_name");
+                return true;
             }
+
             return false;
         }
     }

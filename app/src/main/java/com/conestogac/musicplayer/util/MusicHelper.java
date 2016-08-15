@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Album;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
  */
 public class MusicHelper {
 
+    private static final String TAG = "MusicHelper";
     /**
      * Return song all list
      */
@@ -74,6 +76,7 @@ public class MusicHelper {
         ContentResolver musicResolver = ctxt.getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, projection, selection, selectionArgs, null);
+        Log.d(TAG, "cursor count:"+ musicCursor.getCount());
 
         if (musicCursor != null) {
             int idColumn = musicCursor.getColumnIndex
@@ -84,7 +87,7 @@ public class MusicHelper {
                     (Audio.Media.ARTIST);
             int albumIdColumn = musicCursor.getColumnIndex
                     (Audio.Albums.ALBUM_ID);
-
+            musicCursor.moveToFirst();
             foundSong = new Song(musicCursor.getLong(idColumn), musicCursor.getString(titleColumn),
                     musicCursor.getString(artistColumn), musicCursor.getString(albumIdColumn));
             musicCursor.close();

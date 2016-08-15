@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Playlist;
 import com.conestogac.musicplayer.util.DBHelper;
-import com.conestogac.musicplayer.util.MusicHelper;
 
 import java.util.ArrayList;
 
@@ -103,9 +102,9 @@ public class PlayListViewFragment extends Fragment
     }
 
     /**
-     * This is called when the dialog is completed and the results have been passed
+     * For add playlist which is called after edit dialog is closed
+     * @param playlistName: new playlist name
      */
-
     @Override
     public void onFinishGetPlayListNameDialogForAdd(String playlistName) {
         Log.d(TAG, "onFinishGetPlayListNameDialogForAdd");
@@ -119,6 +118,11 @@ public class PlayListViewFragment extends Fragment
         rView.invalidate();
     }
 
+    /**
+     * For update playlist which is called after edit dialog is closed
+     * @param playlistName: updated playlist name
+     * @param _id: selected item's id
+     */
     @Override
     public void onFinishGetPlayListNameDialogForUpdate(String playlistName, int _id) {
         Log.d(TAG, "onFinishGetPlayListNameDialogForUpdate");
@@ -140,7 +144,11 @@ public class PlayListViewFragment extends Fragment
         rView.invalidate();
     }
 
-
+    /**
+     * Call back when playlist is removed which is called from adapter
+     * eventbus pattern is used for sending event from adapter
+     * @param position
+     */
     @Override
     public void onMethodCallback(int position) {
         Log.d(TAG, "onMethodCallback");
@@ -159,7 +167,7 @@ public class PlayListViewFragment extends Fragment
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-            playLists = dbHelper.getAllPlaylists();
+            playLists = dbHelper.getAllPlaylistsAsArrayList();
 
             if (playLists != null) {
                 //To reuse between view, use method overloading for constructor depends on view

@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity
     private PagerSlidingTabStrip mSlidingTabLayout;
     private ViewPager mViewPager;
     private int mTabPosition = 0;
+    private Bundle bundle;
     /**
      * Id to identity READ_STORAGE permission request.
      */
@@ -62,7 +63,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        setupViewPager(savedInstanceState);
+        bundle = savedInstanceState;
+        setupViewPager();
     }
 
     /**
@@ -122,7 +124,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @AfterPermissionGranted(REQUEST_WRITE_STORAGE)
-    private void setupViewPager(Bundle savedInstanceState) {
+    private void setupViewPager() {
 
         if (!EasyPermissions.hasPermissions(this, WRITE_EXTERNAL_STORAGE)) {
             EasyPermissions.requestPermissions(this,
@@ -161,9 +163,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        if (savedInstanceState != null) {
+        if (bundle != null) {
             // Restore saved layout manager type.
-            mTabPosition = (int) savedInstanceState
+            mTabPosition = (int) bundle
                     .getInt(KEY_LAYOUT_POSITION);
             Log.d(TAG, "Restored position: "+ mTabPosition);
             mViewPager.setCurrentItem(mTabPosition);
