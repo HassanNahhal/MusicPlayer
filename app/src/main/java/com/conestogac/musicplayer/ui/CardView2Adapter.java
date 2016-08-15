@@ -33,9 +33,9 @@ import java.util.ArrayList;
  */
 public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.ViewHolder> {
     private final static String TAG = "CardView2Adapter";
-    private ArrayList<Integer> _id  = new ArrayList<Integer>();
-    private ArrayList<String> firstTitle = new ArrayList<String>();
-    private ArrayList<String>  albumArt = new ArrayList<String>();
+    private ArrayList<Integer> _ids = new ArrayList<Integer>();
+    private ArrayList<String> firstTitles = new ArrayList<String>();
+    private ArrayList<String> albumArts = new ArrayList<String>();
     private ArrayList<Song> songArrayList = new ArrayList<Song>();
     private int viewPagerPos = 0;
     private File file;
@@ -54,10 +54,10 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
 
     public CardView2Adapter(ArrayList<Genre> genreList){
         for (Genre genre : genreList) {
-            this._id.add(genre.getID());
-            this.firstTitle.add(genre.getGenre());
+            this._ids.add(genre.getID());
+            this.firstTitles.add(genre.getGenre());
             //todo what image for genre
-            this.albumArt.add(null);
+            this.albumArts.add(null);
         }
         viewPagerPos = SlideViewPagerAdapter.GENRE_VIEW;
     }
@@ -77,22 +77,22 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
         final ImageView imageView = (ImageView)cardView.findViewById(R.id.albumArt);
 
         //if albumart exist, image is loaded by using Glide, otherwise it will maintain default image
-        if (albumArt.get(position) != null) {
-            file = new java.io.File(albumArt.get(position));
+        if (albumArts.get(position) != null) {
+            file = new java.io.File(albumArts.get(position));
             GlideUtil.loadImageWithFilePath(file, imageView);
         } /*
             else {
             GlideUtil.loadProfileIcon(R.drawable.no_cover_small,imageView);
         }*/
 
-        imageView.setContentDescription(firstTitle.get(position));
+        imageView.setContentDescription(firstTitles.get(position));
         TextView tvFirstTitle = (TextView)cardView.findViewById(R.id.firstTitle);
-        tvFirstTitle.setText(firstTitle.get(position));
+        tvFirstTitle.setText(firstTitles.get(position));
 
         holder.overflow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPopupMenu(holder.overflow);
+                showPopupMenu(holder.overflow, _ids.get(position));
             }
         });
 
@@ -102,7 +102,6 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
                 Context ctxt = v.getContext();
                 Log.d(TAG, "Click on Cardview "+position);
 
-                // TODO:  Process OnClick on CardView: get position of click & call player with proper intent
                 // set information
                 // Transfer to musicplayer with intent
 
@@ -112,7 +111,7 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
 
                 switch (viewPagerPos){
                     case SlideViewPagerAdapter.GENRE_VIEW:  //Get Genre
-                        songArrayList = MusicHelper.getSongListByGenre(ctxt, _id.get(position));
+                        songArrayList = MusicHelper.getSongListByGenre(ctxt, _ids.get(position));
                         break;
                 }
 
@@ -125,19 +124,19 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
 
     @Override
     public int getItemCount() {
-        return firstTitle.size();
+        return firstTitles.size();
     }
 
     /**
      *
      * Showing popup menu when tapping on 3 dots
      */
-    private void showPopupMenu(View view) {
+    private void showPopupMenu(View view, int _id) {
         // inflate menu
         PopupMenu popup = new PopupMenu(ctxt, view);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.menu_album, popup.getMenu());
-        popup.setOnMenuItemClickListener(new MyMenuItemClickListener());
+        popup.setOnMenuItemClickListener(new MyMenuItemClickListener(_id));
         popup.show();
     }
 
@@ -145,15 +144,28 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
      * Click listener for popup menu items
      */
     class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
+        //to save index for updating;
+        private int _id;
 
-        public MyMenuItemClickListener() {
+        public MyMenuItemClickListener(int id) {
+            this._id = id;
         }
+
 
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
                 case R.id.action_add_playlist:
+                    songArrayList = MusicHelper.getSongListByGenre(ctxt, _id);
                     Toast.makeText(ctxt, "Add to playlist", Toast.LENGTH_SHORT).show();
+                    //to prevent add 0 to songlist
+                    if (songArrayList.size() == 0)
+                        return true;
+
+                    //set songlist and goto selecting playlist
+                    Intent gotoSelectPlaylist = new Intent(ctxt, SelectAndAddToPlayList.class);
+                    gotoSelectPlaylist.putExtra(PlayerActivity.EXTRA_SONGLIST, songArrayList);
+                    ctxt.startActivity(gotoSelectPlaylist);
                     return true;
 
                 default:

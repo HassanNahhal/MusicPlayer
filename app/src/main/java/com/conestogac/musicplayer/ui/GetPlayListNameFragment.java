@@ -26,6 +26,7 @@ public class GetPlayListNameFragment  extends DialogFragment {
     }
 
     public static GetPlayListNameFragment newInstance(String title) {
+        updateIndex = -1;
         GetPlayListNameFragment frag = new GetPlayListNameFragment();
         Bundle args = new Bundle();
         args.putString("title", title);

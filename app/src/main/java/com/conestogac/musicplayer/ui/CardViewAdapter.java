@@ -150,7 +150,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                 Context ctxt = v.getContext();
                 Log.d(TAG, "Click on Cardview "+position);
 
-                // TODO:  Process OnClick on CardView: get position of click & call player with proper intent
                 // set information
                 // Transfer to musicplayer with intent
 
@@ -270,7 +269,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                         songArrayList = new DBHelper(ctxt).getSongArrayListFromPlayList(_id);
                         break;
                 }
-                //to prevent music player from starting with zero songlist
+                //to prevent add 0 to songlist
                 if (songArrayList.size() == 0)
                     return true;
                 //set songlist and goto selecting playlist
