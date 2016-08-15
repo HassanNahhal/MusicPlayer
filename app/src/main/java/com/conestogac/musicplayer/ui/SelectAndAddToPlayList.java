@@ -48,6 +48,7 @@ public class SelectAndAddToPlayList extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         String item = (String) getListAdapter().getItem(position);
         dbHelper.insertPlaylistSong(playLists.get(position).getID(),songList);
+        Toast.makeText(this, songList.size()+"songs are added to playlist", Toast.LENGTH_SHORT).show();
         finish();
     }
 

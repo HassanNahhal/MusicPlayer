@@ -2,9 +2,11 @@ package com.conestogac.musicplayer.ui;
 
 import android.content.Context;
 
+import android.content.Intent;
 import android.database.Cursor;
 
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,21 +18,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.conestogac.musicplayer.R;
+import com.conestogac.musicplayer.model.Song;
 import com.conestogac.musicplayer.util.MusicHelper;
 
 import android.provider.MediaStore.Audio;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 
 /**
  * SongCursorAdapter
- * This is for displaying all song list
+ * This is for displaying all song list which is used in PlaylisFragment
  * Author: Changho Choi
  */
 public class SongCursorAdapter extends CursorAdapter {
     private static final String TAG = "SongCursorAdapter";
     private Context ctxt;
     private int viewPagePos;
+    private ArrayList<Song> songArrayList = new ArrayList<>();
 
     // Default constructor
     public SongCursorAdapter(Context context, Cursor cursor, int cflags) {
@@ -66,10 +72,16 @@ public class SongCursorAdapter extends CursorAdapter {
         artist.setText(cursor.getString(cursor.getColumnIndex(Audio.Media.ARTIST)));
         duration.setText(cur_duration);
 
+        //set songID as TAG and read tag at onClick listener
+        overflow.setTag(cursor.getLong(cursor.getColumnIndex(Audio.Media._ID)));
         overflow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPopupMenu(view);
+                int songIndex;
+                //if it is called at initial, set song index as 0
+                songIndex = Integer.parseInt(view.getTag().toString());
+                Log.d(TAG, "setOnClickListener Tag: "+songIndex);
+                showPopupMenu(view, songIndex);
             }
         });
 
@@ -81,12 +93,12 @@ public class SongCursorAdapter extends CursorAdapter {
      *
      * Showing popup menu when tapping on 3 dots
      */
-    private void showPopupMenu(View view) {
+    private void showPopupMenu(View view, int _id) {
         // inflate menu
         PopupMenu popup = new PopupMenu(ctxt, view);
         MenuInflater inflater = popup.getMenuInflater();
         inflater.inflate(R.menu.menu_album, popup.getMenu());
-        popup.setOnMenuItemClickListener(new MyMenuItemClickListener());
+        popup.setOnMenuItemClickListener(new MyMenuItemClickListener(_id));
         popup.show();
     }
 
@@ -94,15 +106,24 @@ public class SongCursorAdapter extends CursorAdapter {
      * Click listener for popup menu items
      */
     class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
+        //to save index for updating;
+        private int _id;
 
-        public MyMenuItemClickListener() {
+        //to make it easy, position data is sent from the holder
+        public MyMenuItemClickListener(int id) {
+            this._id = id;
         }
+
 
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
                 case R.id.action_add_playlist:
-                    Toast.makeText(ctxt, "Add to playlist", Toast.LENGTH_SHORT).show();
+                    //set songlist and goto selecting playlist
+                    songArrayList.add(MusicHelper.getSongFromId(ctxt, _id));
+                    Intent gotoSelectPlaylist = new Intent(ctxt, SelectAndAddToPlayList.class);
+                    gotoSelectPlaylist.putExtra(PlayerActivity.EXTRA_SONGLIST, songArrayList);
+                    ctxt.startActivity(gotoSelectPlaylist);
                     return true;
                 default:
             }

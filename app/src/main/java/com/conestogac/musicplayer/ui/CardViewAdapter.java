@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.support.v7.widget.CardView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Album;

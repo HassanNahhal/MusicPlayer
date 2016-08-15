@@ -157,11 +157,9 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
             switch (menuItem.getItemId()) {
                 case R.id.action_add_playlist:
                     songArrayList = MusicHelper.getSongListByGenre(ctxt, _id);
-                    Toast.makeText(ctxt, "Add to playlist", Toast.LENGTH_SHORT).show();
                     //to prevent add 0 to songlist
                     if (songArrayList.size() == 0)
                         return true;
-
                     //set songlist and goto selecting playlist
                     Intent gotoSelectPlaylist = new Intent(ctxt, SelectAndAddToPlayList.class);
                     gotoSelectPlaylist.putExtra(PlayerActivity.EXTRA_SONGLIST, songArrayList);
