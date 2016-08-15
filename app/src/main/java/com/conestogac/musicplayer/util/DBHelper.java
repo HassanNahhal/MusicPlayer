@@ -123,20 +123,20 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     //Update record with given ID
-    public Integer updatePlaylist(Playlist playlist) {
+    public Integer updatePlaylistName(int _id, String name) {
         Integer numberOfUpdated;
 
         ContentValues cv = new ContentValues();
         SQLiteDatabase db = getWritableDatabase();
         //to avoid update empty task
         //isEmpty should be used for string comparision
-        if (playlist.getName().isEmpty() == false) {
-            cv.put(PLAYLIST_NAME, playlist.getName());
+        if (name != "") {
+            cv.put(PLAYLIST_NAME, name);
         }
 
         //update data by search with ID
         numberOfUpdated = db.update(TABLE_PLAYLIST, cv, "_id = ? ",
-                new String[]{Integer.toString(playlist.getID())});
+                new String[]{Integer.toString(_id)});
 
         db.close();
         return numberOfUpdated;

@@ -2,9 +2,12 @@ package com.conestogac.musicplayer.ui;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Image;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -45,6 +48,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     private ArrayList<Song> songArrayList = new ArrayList<>();
     private int viewpagerPos = 0;
     private Context ctxt;
+    private Fragment playListFragment;
 
     private File file;
 
@@ -98,8 +102,9 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     /**
      * Callback is  to give callback to fragment
      */
-    public CardViewAdapter(ArrayList<Playlist> playList, AdapterCallback callback){
+    public CardViewAdapter(ArrayList<Playlist> playList, AdapterCallback callback, Fragment fragment){
         this.mAdapterCallback = callback;
+        this.playListFragment = fragment;
         for (Playlist list : playList) {
             this._id.add(list.getID());
             this.firstTitle.add(list.getName());
@@ -181,27 +186,38 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         holder.overflow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPopupMenu(holder.overflow);
+                showPopupMenu(holder.overflow, _id.get(position));
             }
         });
 
         cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                DBHelper dbHelper = new DBHelper(v.getContext());
+                final DBHelper dbHelper = new DBHelper(v.getContext());
                 if (viewpagerPos == SlideViewPagerAdapter.PLAYLIST_VIEW) {
-                    dbHelper.deletePlaylist(_id.get(position));
+                    //Get confirm to delete
+                    new AlertDialog.Builder(ctxt)
+                            .setIconAttribute(android.R.attr.alertDialogIcon)
+                            .setTitle("Exit the receipt keeper")
+                            .setMessage(ctxt.getString(R.string.message_to_confirm_delete))
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dbHelper.deletePlaylist(_id.get(position));
+                                    try {
+                                        mAdapterCallback.onMethodCallback(position);
+                                    } catch (ClassCastException exception) {
+                                        // do something
+                                    }
+                                }
+                            })
+                            .setNegativeButton("No", null)
+                            .show();
 
-                    try {
-                        mAdapterCallback.onMethodCallback(position);
-                    } catch (ClassCastException exception) {
-                        // do something
-                    }
                     return true;
                 } else {
                     return false;
                 }
-
             }
         });
     }
@@ -214,23 +230,32 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
 
     /**
      *
-     * Showing popup menu when tapping on 3 dots
+     * Showing popup menu when tapping on 3 dots menu
      */
-    private void showPopupMenu(View view) {
+    private void showPopupMenu(View view, int _id) {
         // inflate menu
         PopupMenu popup = new PopupMenu(ctxt, view);
         MenuInflater inflater = popup.getMenuInflater();
-        inflater.inflate(R.menu.menu_album, popup.getMenu());
-        popup.setOnMenuItemClickListener(new MyMenuItemClickListener());
+
+        if (viewpagerPos == SlideViewPagerAdapter.PLAYLIST_VIEW)
+            inflater.inflate(R.menu.menu_playlist, popup.getMenu());
+        else
+            inflater.inflate(R.menu.menu_album, popup.getMenu());
+
+        popup.setOnMenuItemClickListener(new MyMenuItemClickListener(_id));
         popup.show();
     }
 
     /**
-     * Click listener for popup menu items
+     * Click listener class for popup menu items
      */
     class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
+        //to save index for updating;
+        private int _id;
 
-        public MyMenuItemClickListener() {
+        //to make it easy, position data is sent from the holder
+        public MyMenuItemClickListener(int id) {
+            this._id = id;
         }
 
         @Override
@@ -239,11 +264,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                 case R.id.action_add_playlist:
                     Toast.makeText(ctxt, "Add to playlist", Toast.LENGTH_SHORT).show();
                     return true;
-                case R.id.action_remove_playlist:
-                    Toast.makeText(ctxt, "Remove from playlist", Toast.LENGTH_SHORT).show();
-                    return true;
+
                 case R.id.action_edit_playlist:
-                    Toast.makeText(ctxt, "Edit playlist", Toast.LENGTH_SHORT).show();
+                    GetPlayListNameFragment getPlayListNameFragment = GetPlayListNameFragment.newInstance("Edit PlayList Name", this._id);
+
+                    getPlayListNameFragment.setTargetFragment(playListFragment, 300);
+                    getPlayListNameFragment.show(playListFragment.getFragmentManager(), "fragment_edit_name");
                     return true;
                 default:
             }

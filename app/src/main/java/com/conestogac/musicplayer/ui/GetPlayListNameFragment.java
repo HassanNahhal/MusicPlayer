@@ -17,11 +17,12 @@ import com.conestogac.musicplayer.R;
  * Author: Hassan Nahhal
  */
 public class GetPlayListNameFragment  extends DialogFragment {
-
+    static int updateIndex = -1;
     public GetPlayListNameFragment() {}
 
     public interface GetPlayListNameDialogListener {
-        void onFinishGetPlayListNameDialog(String playlistName);
+        void onFinishGetPlayListNameDialogForAdd(String playlistName);
+        void onFinishGetPlayListNameDialogForUpdate(String playlistName,int index);
     }
 
     public static GetPlayListNameFragment newInstance(String title) {
@@ -31,13 +32,21 @@ public class GetPlayListNameFragment  extends DialogFragment {
         frag.setArguments(args);
         return frag;
     }
-
+    public static GetPlayListNameFragment newInstance(String title, int index) {
+        updateIndex = index;
+        GetPlayListNameFragment frag = new GetPlayListNameFragment();
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        frag.setArguments(args);
+        return frag;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL,android.R.style.Theme_Material_Light_Dialog_Alert);
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_get_play_list_name, container);
@@ -54,7 +63,11 @@ public class GetPlayListNameFragment  extends DialogFragment {
             @Override
             public void onClick(View v) {
                 GetPlayListNameDialogListener listener = (GetPlayListNameDialogListener) getTargetFragment();
-                listener.onFinishGetPlayListNameDialog(playlistName.getText().toString());
+                if (updateIndex == -1) {
+                    listener.onFinishGetPlayListNameDialogForAdd(playlistName.getText().toString());
+                } else {
+                    listener.onFinishGetPlayListNameDialogForUpdate(playlistName.getText().toString(), updateIndex);
+                }
                 dismiss();
             }
         });

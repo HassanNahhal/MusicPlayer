@@ -107,24 +107,46 @@ public class PlayListViewFragment extends Fragment
      */
 
     @Override
-    public void onFinishGetPlayListNameDialog(String playlistName) {
-        Log.d(TAG, "onFinishGetPlayListNameDialog");
+    public void onFinishGetPlayListNameDialogForAdd(String playlistName) {
+        Log.d(TAG, "onFinishGetPlayListNameDialogForAdd");
         Playlist playlist_item = new Playlist(playlistName, 0);
         DBHelper dbHelper = new DBHelper(getContext());
 
         playlist_item.setID(dbHelper.insertPlaylist(playlist_item));
         playLists.add(playlist_item);  //although it is clear read from db, but to minimize garbage just adding at arraylist
-        rcAdapter = new CardViewAdapter(playLists, this);
+        rcAdapter = new CardViewAdapter(playLists, this, PlayListViewFragment.this);
         rView.setAdapter(rcAdapter);
         rView.invalidate();
     }
+
+    @Override
+    public void onFinishGetPlayListNameDialogForUpdate(String playlistName, int _id) {
+        Log.d(TAG, "onFinishGetPlayListNameDialogForUpdate");
+
+        Playlist playlist_item;
+        DBHelper dbHelper = new DBHelper(getContext());
+
+        dbHelper.updatePlaylistName(_id, playlistName);
+        for (int index = 0; index < playLists.size(); index++) {
+            playlist_item = playLists.get(index);
+            if (playlist_item.getID() == _id) {
+                playlist_item.setName(playlistName);
+                playLists.set(index,playlist_item);
+            }
+        }
+
+        rcAdapter = new CardViewAdapter(playLists, this, PlayListViewFragment.this);
+        rView.setAdapter(rcAdapter);
+        rView.invalidate();
+    }
+
 
     @Override
     public void onMethodCallback(int position) {
         Log.d(TAG, "onMethodCallback");
         //to minimize db operation and garbage
         playLists.remove(position);
-        rcAdapter = new CardViewAdapter(playLists, this);
+        rcAdapter = new CardViewAdapter(playLists, this, PlayListViewFragment.this);
         rView.setAdapter(rcAdapter);
         rView.invalidate();
     }
@@ -141,7 +163,7 @@ public class PlayListViewFragment extends Fragment
 
             if (playLists != null) {
                 //To reuse between view, use method overloading for constructor depends on view
-                rcAdapter = new CardViewAdapter(playLists, PlayListViewFragment.this);
+                rcAdapter = new CardViewAdapter(playLists, PlayListViewFragment.this, PlayListViewFragment.this);
                 rView.setAdapter(rcAdapter);
             }
             }

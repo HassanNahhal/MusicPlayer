@@ -155,12 +155,7 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
                 case R.id.action_add_playlist:
                     Toast.makeText(ctxt, "Add to playlist", Toast.LENGTH_SHORT).show();
                     return true;
-                case R.id.action_remove_playlist:
-                    Toast.makeText(ctxt, "Remove from playlist", Toast.LENGTH_SHORT).show();
-                    return true;
-                case R.id.action_edit_playlist:
-                    Toast.makeText(ctxt, "Edit playlist", Toast.LENGTH_SHORT).show();
-                    return true;
+
                 default:
             }
             return false;
