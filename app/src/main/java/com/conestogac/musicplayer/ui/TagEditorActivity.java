@@ -268,11 +268,18 @@ public class TagEditorActivity extends AppCompatActivity {
         values.put(MediaStore.Audio.AudioColumns.TRACK, String.valueOf(songTrack.getText()));
         values.put(MediaStore.Audio.AudioColumns.COMPOSER, String.valueOf(songComposer.getText()));
 
+
+        String selection = MediaStore.Audio.AudioColumns._ID + " = ?";
+        String arg[] = {String.valueOf(currentSong.getID())};
+        getContentResolver().update(URI, values, selection, arg);
+
+
+
         //Do the updates for the song
         if (mFileUri != null) {
-            String selection = MediaStore.Audio.AudioColumns._ID + " = ?";
-            String arg[] = {String.valueOf(currentSong.getID())};
-            getContentResolver().update(URI, values, selection, arg);
+            String selection2 = MediaStore.Audio.AudioColumns._ID + " = ?";
+            String arg2[] = {String.valueOf(currentSong.getID())};
+            getContentResolver().update(URI, values, selection2, arg2);
 
             Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
             getContentResolver().delete(ContentUris.withAppendedId(sArtworkUri, Long.parseLong(currentSong.getAlbumId())), null, null);

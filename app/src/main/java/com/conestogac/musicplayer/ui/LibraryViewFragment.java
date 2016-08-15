@@ -103,6 +103,14 @@ public class LibraryViewFragment  extends Fragment implements AdapterCallback {
     @Override
     public void onResume() {
         super.onResume();
+        updateData();
+
+    }
+
+    private void updateData()
+    {
+        readDataFromDB(getArguments().getInt(KEY_POSITION, 0) + 1);
+        listView.setAdapter(rcAdapter);
     }
 
     @Override
