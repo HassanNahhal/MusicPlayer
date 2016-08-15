@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.support.v7.widget.CardView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Album;
@@ -100,6 +99,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
 
     /**
      * Callback is  to give callback to fragment
+     * This is for playlist
      */
     public CardViewAdapter(ArrayList<Playlist> playList, AdapterCallback callback, Fragment fragment){
         this.mAdapterCallback = callback;
@@ -184,7 +184,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         holder.overflow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPopupMenu(holder.overflow, _ids.get(position));
+                showPopupMenu(holder.overflow, _ids.get(position), position);
             }
         });
 
@@ -230,7 +230,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
      *
      * Showing popup menu when tapping on 3 dots menu
      */
-    private void showPopupMenu(View view, int _id) {
+    private void showPopupMenu(View view, int _id, int position) {
         // inflate menu
         PopupMenu popup = new PopupMenu(ctxt, view);
         MenuInflater inflater = popup.getMenuInflater();
@@ -240,7 +240,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         else
             inflater.inflate(R.menu.menu_album, popup.getMenu());
 
-        popup.setOnMenuItemClickListener(new MyMenuItemClickListener(_id));
+        popup.setOnMenuItemClickListener(new MyMenuItemClickListener(_id, position));
         popup.show();
     }
 
@@ -249,16 +249,18 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
      */
     class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
         //to save index for updating;
-        private int _id;
+        private int _id;    //id of selection
+        private int position;    //position of selection
 
         //to make it easy, position data is sent from the holder
-        public MyMenuItemClickListener(int id) {
+        public MyMenuItemClickListener(int id, int position) {
             this._id = id;
+            this.position = position;
         }
 
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
-            if (menuItem.getItemId() == R.id.action_add_playlist) {
+            if (menuItem.getItemId() == R.id.action_add_playlist) {         //adding to playlist
                 switch (viewpagerPos) {
                     case SlideViewPagerAdapter.ALBUM_VIEW:  //Get Album
                         songArrayList = MusicHelper.getSongListByAlbum(ctxt, _id);
@@ -278,12 +280,43 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                 gotoSelectPlaylist.putExtra(PlayerActivity.EXTRA_SONGLIST, songArrayList);
                 ctxt.startActivity(gotoSelectPlaylist);
                 return true;
+            } else if (menuItem.getItemId() == R.id.action_remove_song) {   //removing songs
+                new AlertDialog.Builder(ctxt)
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setTitle(R.string.delete_playlist)
+                        .setMessage(ctxt.getString(R.string.message_to_confirm_delete))
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                final DBHelper dbHelper = new DBHelper(ctxt);
+                                switch (viewpagerPos) {
+                                    case SlideViewPagerAdapter.ALBUM_VIEW:  //Get Album
+                                        songArrayList = MusicHelper.getSongListByAlbum(ctxt, _id);
+                                        break;
+                                    case SlideViewPagerAdapter.ARTIST_VIEW:  //Get Artist
+                                        songArrayList = MusicHelper.getSongListByArtist(ctxt, _id);
+                                        break;
+                                    case SlideViewPagerAdapter.PLAYLIST_VIEW:  //Get Playlist
+                                        songArrayList = new DBHelper(ctxt).getSongArrayListFromPlayList(_id);
+                                        dbHelper.deletePlaylist(_id);
+                                        try {
+                                            mAdapterCallback.onMethodCallback(position);
+                                        } catch (ClassCastException exception) {
+                                            // do something
+                                        }
+                                        break;
+                                }
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+
             } else if (menuItem.getItemId() == R.id.action_edit_playlist) {
-                //call edit dialog fragement to get playlist name
-                GetPlayListNameFragment getPlayListNameFragment = GetPlayListNameFragment.newInstance("Edit PlayList Name", this._id);
-                getPlayListNameFragment.setTargetFragment(playListFragment, 300);
-                getPlayListNameFragment.show(playListFragment.getFragmentManager(), "fragment_edit_name");
-                return true;
+                    //call edit dialog fragement to get playlist name
+                    GetPlayListNameFragment getPlayListNameFragment = GetPlayListNameFragment.newInstance("Edit PlayList Name", this._id);
+                    getPlayListNameFragment.setTargetFragment(playListFragment, 300);
+                    getPlayListNameFragment.show(playListFragment.getFragmentManager(), "fragment_edit_name");
+                    return true;
             }
 
             return false;

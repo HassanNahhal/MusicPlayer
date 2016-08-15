@@ -433,6 +433,25 @@ public class MusicHelper {
     }
 
 
+
+    static public void deleteSongWithSongID(Context context, int songId) {
+
+        Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                songId);
+        context.getContentResolver().delete(uri, null, null);
+
+        return;
+    }
+
+    static public void deleteSongWithArtistID(Context context, int songId) {
+
+    }
+    static public void deleteSongWithAlbumID(Context context, int albumId) {
+
+    }
+    static public void deleteSongWithGenreID(Context context, int genreId) {
+
+    }
 }
 
 

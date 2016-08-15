@@ -1,7 +1,9 @@
 package com.conestogac.musicplayer.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 
@@ -19,6 +21,7 @@ import android.widget.TextView;
 
 import com.conestogac.musicplayer.R;
 import com.conestogac.musicplayer.model.Song;
+import com.conestogac.musicplayer.util.DBHelper;
 import com.conestogac.musicplayer.util.MusicHelper;
 
 import android.provider.MediaStore.Audio;
@@ -37,12 +40,21 @@ public class SongCursorAdapter extends CursorAdapter {
     private Context ctxt;
     private int viewPagePos;
     private ArrayList<Song> songArrayList = new ArrayList<>();
+    //to send back event to fragement to update screen
+    private AdapterCallback mAdapterCallback;
 
-    // Default constructor
-    public SongCursorAdapter(Context context, Cursor cursor, int cflags) {
+    /**
+     * Constructor for adapter
+     * @param context: context
+     * @param cursor: cursor
+     * @param cflags: to save viewPage position
+     * @param callback: callback to send back to fragement
+     */
+    public SongCursorAdapter(Context context, Cursor cursor, int cflags, AdapterCallback callback) {
         super(context, cursor, 0);
         ctxt = context;
         viewPagePos = cflags;   //save pageviwer's position
+        this.mAdapterCallback = callback;
     }
 
 
@@ -124,6 +136,22 @@ public class SongCursorAdapter extends CursorAdapter {
                     Intent gotoSelectPlaylist = new Intent(ctxt, SelectAndAddToPlayList.class);
                     gotoSelectPlaylist.putExtra(PlayerActivity.EXTRA_SONGLIST, songArrayList);
                     ctxt.startActivity(gotoSelectPlaylist);
+                    return true;
+                case R.id.action_remove_song:
+                    new AlertDialog.Builder(ctxt)
+                            .setIconAttribute(android.R.attr.alertDialogIcon)
+                            .setTitle(R.string.delete_playlist)
+                            .setMessage(ctxt.getString(R.string.message_to_confirm_delete))
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    MusicHelper.deleteSongWithSongID(ctxt, _id);
+                                    Toast.makeText(ctxt, "Deleted", Toast.LENGTH_SHORT).show();
+                                    mAdapterCallback.onMethodCallback(0);
+                                }
+                            })
+                            .setNegativeButton("No", null)
+                            .show();
                     return true;
                 default:
             }

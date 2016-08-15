@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/action_edit_playlist"
-        android:orderInCategory="102"
+        android:orderInCategory="103"
         android:title="@string/action_edit_playlist" />
+    <item
+        android:id="@+id/action_remove_song"
+        android:orderInCategory="104"
+        android:title="@string/action_delete_songs" />
 </menu>

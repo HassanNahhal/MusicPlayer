@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * This fragement will display all libaries
  * author: Changho Choi
  */
-public class LibraryViewFragment  extends Fragment {
+public class LibraryViewFragment  extends Fragment implements AdapterCallback {
     private final static String TAG="LibraryViewFragment";
     private static final String KEY_POSITION="position";
     private ListView listView;
@@ -125,9 +125,21 @@ public class LibraryViewFragment  extends Fragment {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-            rcAdapter = new SongCursorAdapter(ctxt, MusicHelper.getAllSongAsCursor(ctxt), pagePos);
+            rcAdapter = new SongCursorAdapter(ctxt, MusicHelper.getAllSongAsCursor(ctxt), pagePos, LibraryViewFragment.this );
             listView.setAdapter(rcAdapter);
             }
         });
+    }
+
+    /**
+     * Call back when playlist is removed which is called from adapter
+     * eventbus pattern is used for sending event from adapter
+     * @param position
+     */
+    @Override
+    public void onMethodCallback(int position) {
+        Log.d(TAG, "onMethodCallback");
+        //to minimize db operation and garbage
+        readDataFromDB(getArguments().getInt(KEY_POSITION, 0) + 1);
     }
 }

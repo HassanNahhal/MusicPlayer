@@ -22,7 +22,7 @@
 
     <!-- popup menu on album  -->
     <string name="action_add_playlist">Add to playlist</string>
-    <string name="action_remove_playlist">Remove from playlist</string>
+    <string name="action_delete_songs">Delete songs</string>
     <string name="action_edit_playlist">Edit playlist</string>
 
     <!-- TODO: Remove or change this placeholder text -->
