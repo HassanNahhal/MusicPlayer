@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * CardView2Adapter
  * Simplified Version of AlbumView Adapter which is used in Genre View
  * Just display Text and Image
- * AUthor: Changho Choi
+ * AUthor: SungJoe Kim
  */
 public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.ViewHolder> {
     private final static String TAG = "CardView2Adapter";

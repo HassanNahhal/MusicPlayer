@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 /**
  * For Playlist Selection and Adding to DB inherited from ListActivity
- * Author: Changho Choi
+ * Author: Hassan Nahhal
  */
 public class SelectAndAddToPlayList extends ListActivity {
     private final static String TAG="SelectAndAddToPlayList";

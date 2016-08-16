@@ -1,0 +1,35 @@
+      30 text files.
+classified 30 files      30 unique files.                              
+       0 files ignored.
+
+language,filename,blank,comment,code,"https://github.com/AlDanial/cloc v 1.66  T=0.16 s (190.4 files/s, 29509.2 lines/s)"
+Java,java/com/conestogac/musicplayer/util/MusicHelper.java,74,67,315
+Java,java/com/conestogac/musicplayer/ui/PlayerActivity.java,69,67,312
+Java,java/com/conestogac/musicplayer/ui/CardViewAdapter.java,36,75,255
+Java,java/com/conestogac/musicplayer/util/DBHelper.java,65,60,244
+Java,java/com/conestogac/musicplayer/ui/MusicService.java,51,92,221
+Java,java/com/conestogac/musicplayer/ref/Play_audio_example.java,79,2,220
+Java,java/com/conestogac/musicplayer/ui/TagEditorActivity.java,54,68,204
+Java,java/com/conestogac/musicplayer/ui/MainActivity.java,32,40,138
+Java,java/com/conestogac/musicplayer/ui/CardView2Adapter.java,23,48,126
+Java,java/com/conestogac/musicplayer/ui/PlayListViewFragment.java,27,38,118
+Java,java/com/conestogac/musicplayer/ui/LibraryViewFragment.java,22,27,111
+Java,java/com/conestogac/musicplayer/ui/SongCursorAdapter.java,21,33,108
+Java,java/com/conestogac/musicplayer/model/Song.java,18,7,66
+Java,java/com/conestogac/musicplayer/ui/ArtistViewFragment.java,16,21,64
+Java,java/com/conestogac/musicplayer/ui/SlideViewPagerAdapter.java,21,25,64
+Java,java/com/conestogac/musicplayer/ui/AlbumViewFragment.java,17,21,63
+Java,java/com/conestogac/musicplayer/ui/GetPlayListNameFragment.java,15,20,63
+Java,java/com/conestogac/musicplayer/ui/GenreViewFragment.java,15,17,62
+Java,java/com/conestogac/musicplayer/ui/SelectAndAddToPlayList.java,14,21,58
+Java,java/com/conestogac/musicplayer/ui/PlaylistAdapter.java,9,16,43
+Java,java/com/conestogac/musicplayer/ui/SongAdapter.java,10,16,43
+Java,java/com/conestogac/musicplayer/util/GlideUtil.java,8,6,37
+Java,java/com/conestogac/musicplayer/model/Playlist.java,9,3,32
+Java,java/com/conestogac/musicplayer/model/Album.java,7,4,30
+Java,java/com/conestogac/musicplayer/util/ScrollAwareFABBehavior.java,5,8,29
+Java,java/com/conestogac/musicplayer/model/Artist.java,5,3,25
+Java,java/com/conestogac/musicplayer/util/ScreenUtil.java,3,5,15
+Java,java/com/conestogac/musicplayer/model/Genre.java,4,3,15
+Java,java/com/conestogac/musicplayer/ui/PageView.java,3,5,9
+Java,java/com/conestogac/musicplayer/ui/AdapterCallback.java,1,4,4

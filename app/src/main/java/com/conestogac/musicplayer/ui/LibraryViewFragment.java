@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 /**
  * This fragement will display all libraries
- * author: Changho Choi
+ * author: N. Collins
  */
 public class LibraryViewFragment  extends Fragment implements AdapterCallback {
     private final static String TAG="LibraryViewFragment";

@@ -35,7 +35,7 @@ import java.util.ArrayList;
  * CardViewAdapter
  * This class to list up AlbumView
  * which is used by display album, artist, genre
- * Autho: Changho Choi
+ * Autho: SungJoe Kim
  */
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHolder> {
     private final static String TAG = "CardViewAdapter";

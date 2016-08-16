@@ -1,7 +1,7 @@
 package com.conestogac.musicplayer.model;
 
 /**
- * Author Changho Choi
+ * Author Hassan Nahhal
  */
 public class Playlist {
     private int id;

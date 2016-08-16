@@ -13,7 +13,7 @@ import com.conestogac.musicplayer.model.Song;
 import java.util.ArrayList;
 
 /**
- * Author: Changho Choi
+ * Author: Hassan Nahhal
  * This class is a helper to manage database
  */
 public class DBHelper extends SQLiteOpenHelper {

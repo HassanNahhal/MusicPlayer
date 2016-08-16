@@ -33,7 +33,7 @@ import java.util.ArrayList;
 /**
  * SongCursorAdapter
  * This is for displaying all song list which is used in PlaylisFragment
- * Author: Changho Choi
+ * Author: SungJoe Kim
  */
 public class SongCursorAdapter extends CursorAdapter {
     private static final String TAG = "SongCursorAdapter";

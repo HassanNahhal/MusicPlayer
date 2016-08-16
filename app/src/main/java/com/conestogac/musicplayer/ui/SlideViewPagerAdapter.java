@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 
 /**
- *  Francis Choi
+ *  Changho Choi
  *  Due to Actiobar.TAB is depreciated, pagerslidingtabstrip is used.
  *  This is open source which is created based on Google's FragmentPageView
  */

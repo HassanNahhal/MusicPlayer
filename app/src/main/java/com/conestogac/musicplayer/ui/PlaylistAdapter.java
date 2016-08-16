@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * Playlist Adapter which is used in Player
  * This is customized adapter which have image and text at the list
  * And Data is given as Arraylist
- * Author Changho Choi
+ * Author Hassan Nahhal
  */
 public class PlaylistAdapter extends BaseAdapter{
     private ArrayList<Playlist> playlists;
