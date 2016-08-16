@@ -130,13 +130,14 @@ public class SongCursorAdapter extends CursorAdapter {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch (menuItem.getItemId()) {
+                //set songlist and goto selecting playlist
                 case R.id.action_add_playlist:
-                    //set songlist and goto selecting playlist
                     songArrayList.add(MusicHelper.getSongFromId(ctxt, _id));
                     Intent gotoSelectPlaylist = new Intent(ctxt, SelectAndAddToPlayList.class);
                     gotoSelectPlaylist.putExtra(PlayerActivity.EXTRA_SONGLIST, songArrayList);
                     ctxt.startActivity(gotoSelectPlaylist);
                     return true;
+                //Delete song from list. after deletion callback onMethodCallback is called to update view
                 case R.id.action_remove_song:
                     new AlertDialog.Builder(ctxt)
                             .setIconAttribute(android.R.attr.alertDialogIcon)

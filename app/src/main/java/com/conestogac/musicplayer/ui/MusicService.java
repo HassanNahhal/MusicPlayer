@@ -60,6 +60,7 @@ public class MusicService extends Service implements
     private boolean shuffle=false;
     private Random rand;
 
+    //current song's albumart
     public Bitmap currentArtwork;
 
     public MusicService() {
@@ -174,7 +175,9 @@ public class MusicService extends Service implements
     }
 
     /**
-     *
+     * Play Song
+     * It will follow state machine defined at the following site
+     * https://developer.android.com/reference/android/media/MediaPlayer.html
      */
     public void playSong(){
         //start by resetting the MediaPlayer
@@ -200,6 +203,7 @@ public class MusicService extends Service implements
             Log.e(TAG, "Error setting data source", e);
         }
 
+        //get album art
         currentArtwork = MusicHelper.getALbumArtFromSongID(this.getBaseContext(), playSong.getAlbumId());
         //send title to activity for updating song title & artwork
         sendSongUpdatedMessageToActivity();
@@ -220,13 +224,15 @@ public class MusicService extends Service implements
         mState = State.Prepared;
         mediaPlayer.start();
         mState = State.Playing;
+
+        //define pending intent which will be called when user select notification bar
         Intent notIntent = new Intent(this, PlayerActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        //set up notification including message to be shown during the play
         Notification.Builder builder = new Notification.Builder(this);
-
         builder.setContentIntent(pendInt)
                 .setSmallIcon(R.drawable.ic_play_circle_outline_black_24dp)
                 .setTicker(songTitle)
@@ -311,14 +317,13 @@ public class MusicService extends Service implements
     public void pausePlayer(){
         player.pause();
 
-        //to update status
+        //to update notification status as Pause
         Intent notIntent = new Intent(this, PlayerActivity.class);
         notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendInt = PendingIntent.getActivity(this, 0,
                 notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification.Builder builder = new Notification.Builder(this);
-
         builder.setContentIntent(pendInt)
                 .setSmallIcon(R.drawable.ic_play_circle_outline_black_24dp)
                 .setTicker(songTitle)
@@ -326,7 +331,6 @@ public class MusicService extends Service implements
                 .setContentTitle("Pause")
                 .setContentText(songTitle);
         Notification not = builder.build();
-
         startForeground(NOTIFY_ID, not);
     }
 

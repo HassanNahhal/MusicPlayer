@@ -1,7 +1,8 @@
 package com.conestogac.musicplayer.ui;
 
 /**
- * Created by infomat on 16-08-12.
+ * Created by Changho Choi
+ * This is for callback from adapter to fragment for updating screen after operation
  */
 public interface AdapterCallback {
     void onMethodCallback(int position);

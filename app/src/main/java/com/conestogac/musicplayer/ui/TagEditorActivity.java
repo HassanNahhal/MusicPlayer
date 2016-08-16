@@ -1,6 +1,10 @@
 package com.conestogac.musicplayer.ui;
 
-//Written by N. Collins
+/**
+ * This class is for editing music tag
+ * Written by N. Collins
+ */
+
 
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -34,6 +38,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Tag Editor Acitivity
+ * AUthor: N. Collins
+ */
 public class TagEditorActivity extends AppCompatActivity {
 
 
@@ -46,10 +54,6 @@ public class TagEditorActivity extends AppCompatActivity {
     Song currentSong;
 
     private static final int RESULT_LOAD_IMG = 2;
-    private static final String KEY_FILE_URI = "key_file_uri";
-    private static final String KEY_DOWNLOAD_URL = "key_download_url";
-    private Uri mDownloadUrl = null;
-
 
 
     @Override
@@ -70,13 +74,12 @@ public class TagEditorActivity extends AppCompatActivity {
         Spinner genreSpinner;
         genreSpinner = (Spinner) findViewById(R.id.spinner);
 
+        //get song id
         Bundle b = getIntent().getExtras();
         currentSong = b.getParcelable("id");
         final ArrayList<Genre> genreList = MusicHelper.getGenreList(this.getBaseContext());
 
-
         artistName.setText(currentSong.getArtist());
-
         songTitle.setText(currentSong.getTitle());
 
         Uri URI = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -91,9 +94,8 @@ public class TagEditorActivity extends AppCompatActivity {
         };
         String sortOrder = MediaStore.Audio.Media.TITLE + " ASC";
 
+        //doing query with ID and fill in form with data
         Cursor cursor = getContentResolver().query(URI, projection, selection, arg, sortOrder);
-
-
         if (cursor != null && cursor.moveToFirst()) {
             albumTitle.setText(cursor.getString(4));
             songYear.setText(cursor.getString(5));
@@ -101,6 +103,7 @@ public class TagEditorActivity extends AppCompatActivity {
             songComposer.setText(cursor.getString(6));
 
 
+            //Save button for Updating data
             Button saveButton = (Button) findViewById(R.id.TagSaveButton);
             saveButton.setOnClickListener(new Button.OnClickListener() {
                 public void onClick(View v) {
@@ -111,11 +114,10 @@ public class TagEditorActivity extends AppCompatActivity {
             });
         }
 
+        //Search Genre and if found get the list
         final String[] genreNames = new String[genreList.size()];
-
         List<String> list = new ArrayList<String>();
         int originalGenreIndex = 0;
-
         for (int j = 0; j < genreList.size(); j++) {
             ArrayList<Song> SongsByGenre = MusicHelper.getSongListByGenre(this.getBaseContext(), genreList.get(j).getID());
             genreNames[j] = genreList.get(j).getGenre();
@@ -130,12 +132,11 @@ public class TagEditorActivity extends AppCompatActivity {
             }
         }
 
+        //set up spinner
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         genreSpinner.setAdapter(spinnerArrayAdapter);
-
         genreSpinner.setSelection(originalGenreIndex);
-
         genreSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> arg0, View arg1,
@@ -151,9 +152,9 @@ public class TagEditorActivity extends AppCompatActivity {
             }
         });
 
+        //Set up image view and set Observer for user selection
         final ImageView albumImage2 =  (ImageView) findViewById(R.id.tagViewAlbumImage);
         ViewTreeObserver vto = albumImage2.getViewTreeObserver();
-
         final Context context = this.getBaseContext();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -174,7 +175,6 @@ public class TagEditorActivity extends AppCompatActivity {
                 albumImage2.setImageBitmap(Bitmap.createScaledBitmap(currentAlbumArt, width, width, true));
             }
         });
-
         ImageView albumImage = (ImageView) findViewById(R.id.tagViewAlbumImage);
         albumImage.setOnClickListener(new View.OnClickListener() {
 

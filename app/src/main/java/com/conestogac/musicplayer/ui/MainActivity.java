@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //AFter permission granted this will be called
     @AfterPermissionGranted(REQUEST_WRITE_STORAGE)
     private void setupViewPager() {
 
@@ -133,8 +134,7 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-
-
+        //AFter user granted permission, viewer will be setup
         // Get the Viewpager and set its pager PageAdapter so that it can display items
         mViewPager=(ViewPager)findViewById(R.id.view_pager);
         mViewPager.setAdapter(new SlideViewPagerAdapter(getApplicationContext(), getSupportFragmentManager()));
@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        //This is for restore tab poistion
         if (bundle != null) {
             // Restore saved layout manager type.
             mTabPosition = (int) bundle

@@ -28,8 +28,9 @@ import java.util.ArrayList;
 
 /**
  * CardView2Adapter
- * Simplified Version of AlbumView Adapter
+ * Simplified Version of AlbumView Adapter which is used in Genre View
  * Just display Text and Image
+ * AUthor: Changho Choi
  */
 public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.ViewHolder> {
     private final static String TAG = "CardView2Adapter";
@@ -41,6 +42,10 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
     private File file;
     private Context ctxt;
 
+    /**
+     * Define ViewHolder for better performance
+     * https://developer.android.com/training/improving-layouts/smooth-scrolling.html
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
         private ImageView overflow;
@@ -51,7 +56,10 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
         }
     }
 
-
+    /**
+     * Adapter for Genre
+     * @param genreList
+     */
     public CardView2Adapter(ArrayList<Genre> genreList){
         for (Genre genre : genreList) {
             this._ids.add(genre.getID());
@@ -62,7 +70,12 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
         viewPagerPos = SlideViewPagerAdapter.GENRE_VIEW;
     }
 
-
+    /**
+     * onCreateViewHolder inflate layout and return ViewHolder Object
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @Override
     public CardView2Adapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CardView cv = (CardView) LayoutInflater.from(parent.getContext())
@@ -71,24 +84,28 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
         return new ViewHolder(cv);
     }
 
+    /**
+     * Bind view holder with viewHolder created on onCreateViewHolder
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         CardView cardView = holder.cardView;
         final ImageView imageView = (ImageView)cardView.findViewById(R.id.albumArt);
 
-        //if albumart exist, image is loaded by using Glide, otherwise it will maintain default image
+        //if albumart exist, image is loaded by using Glide,
+        // otherwise placeholder defined within Glide will be displayed
         if (albumArts.get(position) != null) {
             file = new java.io.File(albumArts.get(position));
             GlideUtil.loadImageWithFilePath(file, imageView);
-        } /*
-            else {
-            GlideUtil.loadProfileIcon(R.drawable.no_cover_small,imageView);
-        }*/
+        }
 
         imageView.setContentDescription(firstTitles.get(position));
         TextView tvFirstTitle = (TextView)cardView.findViewById(R.id.firstTitle);
         tvFirstTitle.setText(firstTitles.get(position));
 
+        //define onClick listener for 3-dot optio menu
         holder.overflow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -96,6 +113,7 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
             }
         });
 
+        //Set OnClick listener on cardview which will go to Player
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,6 +133,7 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
                         break;
                 }
 
+                //For animation TransitionAnimation is used. Same trasition id for image view of this and player is defined
                 ActivityOptions transitionActivityOptions = ActivityOptions.makeSceneTransitionAnimation((Activity)ctxt, sharedView, transitionName);
                 gotoMusicPlayer.putExtra(PlayerActivity.EXTRA_SONGLIST, songArrayList);
                 ctxt.startActivity(gotoMusicPlayer, transitionActivityOptions.toBundle());
@@ -122,14 +141,18 @@ public class CardView2Adapter extends RecyclerView.Adapter<CardView2Adapter.View
         });
     }
 
+    /**
+     * Return list count
+     * @return title's list count
+     */
     @Override
     public int getItemCount() {
         return firstTitles.size();
     }
 
     /**
-     *
      * Showing popup menu when tapping on 3 dots
+     * _id is handed for further processing
      */
     private void showPopupMenu(View view, int _id) {
         // inflate menu

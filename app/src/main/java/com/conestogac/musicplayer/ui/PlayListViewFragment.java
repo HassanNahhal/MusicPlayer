@@ -19,6 +19,7 @@ import com.conestogac.musicplayer.util.DBHelper;
 import java.util.ArrayList;
 
 /**
+ * PlayList View Page
  * Author: Hassan Nahhal
  */
 public class PlayListViewFragment extends Fragment
@@ -70,8 +71,10 @@ public class PlayListViewFragment extends Fragment
         rView.setHasFixedSize(true);
         rView.setLayoutManager(gridLayout);
 
+        //Read data from DB
         readDataFromDB();
 
+        //Define Floating Action button
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.show();
 

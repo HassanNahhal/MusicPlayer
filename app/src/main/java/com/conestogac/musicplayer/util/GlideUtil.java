@@ -16,6 +16,7 @@ import java.io.File;
     moreover it is east to use.
 
     http://google-opensource.blogspot.ca/2014/09/glide-30-media-management-library-for.html
+    Author: Changho Choi
 */
 public class GlideUtil {
     public static void loadImageWithFilePath(File url, ImageView imageView) {

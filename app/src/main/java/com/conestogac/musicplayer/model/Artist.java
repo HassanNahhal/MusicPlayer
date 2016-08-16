@@ -1,7 +1,7 @@
 package com.conestogac.musicplayer.model;
 
 /**
- *  author: SungJoe Kim
+ *  Created by: SungJoe Kim
  */
 public class Artist {
     private int id;

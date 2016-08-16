@@ -10,7 +10,7 @@ import android.view.View;
 /**
  * Define Fab Behavior for Testing
  * If this behaviour is defined at Fab, Fab will disapper when scroll
- *
+ * Author: Changho Choi
  */
 
 public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {

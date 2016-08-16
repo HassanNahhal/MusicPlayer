@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * author Changho Choi
+ * Author Changho Choi
  */
 public class Song  implements Parcelable {
     private long id;
@@ -54,6 +54,10 @@ public class Song  implements Parcelable {
         return 0;
     }
 
+    /**
+     * Parcelable Behaviour is define to send Song ArrayList to PlayerActivity
+     *
+     */
     public Song(Parcel in){
         String[] data= new String[4];
 

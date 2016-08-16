@@ -17,6 +17,10 @@ import com.conestogac.musicplayer.util.DBHelper;
 
 import java.util.ArrayList;
 
+/**
+ * For Playlist Selection and Adding to DB inherited from ListActivity
+ * Author: Changho Choi
+ */
 public class SelectAndAddToPlayList extends ListActivity {
     private final static String TAG="SelectAndAddToPlayList";
     private ArrayList<Playlist> playLists = new ArrayList<>();
@@ -44,9 +48,17 @@ public class SelectAndAddToPlayList extends ListActivity {
 
     }
 
+    /**
+     *  Define OnClick on List Item
+     * @param l listview
+     * @param v View
+     * @param position: position of selection
+     * @param id
+     */
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        String item = (String) getListAdapter().getItem(position);
+        // Insert Songs at selected Playlist
         dbHelper.insertPlaylistSong(playLists.get(position).getID(),songList);
         Toast.makeText(this, songList.size()+" song(s) are added to playlist", Toast.LENGTH_SHORT).show();
         finish();

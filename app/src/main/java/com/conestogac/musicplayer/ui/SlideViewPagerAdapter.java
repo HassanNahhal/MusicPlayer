@@ -13,7 +13,8 @@ import java.util.ArrayList;
 
 /**
  *  Francis Choi
- *  Due to Actiobar.TAB is depreciated, Fragment pager
+ *  Due to Actiobar.TAB is depreciated, pagerslidingtabstrip is used.
+ *  This is open source which is created based on Google's FragmentPageView
  */
 public class SlideViewPagerAdapter extends FragmentPagerAdapter {
     static ArrayList<PageView> PAGEVIEWS = new ArrayList<>();
@@ -60,27 +61,27 @@ public class SlideViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position+1) {
-            //todo for Album View
+            //for Album View
             case ALBUM_VIEW:
                 return AlbumViewFragment.newInstance(position);
 
-            //todo for Library View
+            //for Library View
             case LIBRARY_VIEW:
                 return LibraryViewFragment.newInstance(position);
 
-            //todo for Genre View
+            //for Genre View
             case GENRE_VIEW:
                 return GenreViewFragment.newInstance(position);
 
-            //todo for Artist View
+            //for Artist View
             case ARTIST_VIEW:
                 return ArtistViewFragment.newInstance(position);
 
-            //todo for PlayListview
+            //for PlayListview
             case PLAYLIST_VIEW:
                 return PlayListViewFragment.newInstance(position);
 
-            //todo for Tagedit
+            //for Tagedit
             case TAG_EDITOR:
                 return LibraryViewFragment.newInstance(position);
 

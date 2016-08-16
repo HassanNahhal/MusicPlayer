@@ -74,6 +74,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
     private TextSwitcher textSwitcher;
 
     //local broadcast receiver to get message from service
+    //To update title at acitivy view when player service play next song
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -135,7 +136,10 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             }
         });
 
+        //Set up Music Player Controller
         setupController();
+
+        //Setup sliding panel's anchor point
         mLayout.setAnchorPoint(0.2f);
         mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
 
@@ -175,8 +179,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
 
 
     /**
-     * connect to the service
-     *
+     * Binding to the service
      */
     private ServiceConnection musicConnection = new ServiceConnection(){
 
@@ -190,7 +193,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             musicSrv.setList(songList);
             musicBound = true;
 
-            //music service bind, start player with 1st song
+            //after music service binded, start player with 1st song
             songPicked(null);
         }
 
@@ -228,13 +231,17 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
             songIndex = Integer.parseInt(view.getTag().toString());
         }
 
+        //Set song index and start playing song
         musicSrv.setSong(songIndex);
         musicSrv.playSong();
+
+        //If it is paused, setup controller also
         if(playbackPaused){
             setupController();
             playbackPaused=false;
         }
 
+        //update album art and song title
         updateSongInfomation(songIndex);
         musicController.show(0);
     }
@@ -293,7 +300,6 @@ public class PlayerActivity extends AppCompatActivity implements MediaController
 
     /**
      * Set up musicController and set onClick on musicController
-     *
      */
     public void setupController(){
         //set the musicController up

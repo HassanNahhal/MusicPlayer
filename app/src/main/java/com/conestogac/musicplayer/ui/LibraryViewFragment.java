@@ -27,7 +27,7 @@ import java.util.ArrayList;
 
 
 /**
- * This fragement will display all libaries
+ * This fragement will display all libraries
  * author: Changho Choi
  */
 public class LibraryViewFragment  extends Fragment implements AdapterCallback {
@@ -48,19 +48,22 @@ public class LibraryViewFragment  extends Fragment implements AdapterCallback {
     }
 
     /**
-     * Setup Gridlayout Manager and CardViewAdapter and Recycler View
-     *
+     * onCreateView
      */
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
+
+        //set up view
         final View result=inflater.inflate(R.layout.fragment_list_view, container, false);
         listView = (ListView) result.findViewById(R.id.listView);
         listView.setEmptyView(result.findViewById(R.id.empty_list_item));
 
+        //read data from database and set adapter
         readDataFromDB(getArguments().getInt(KEY_POSITION, 0) + 1);
 
+        //set OnClick Listener for list item
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> listView, View view, int position, long id) {
@@ -68,14 +71,15 @@ public class LibraryViewFragment  extends Fragment implements AdapterCallback {
 
                 // Get the cursor, positioned to the corresponding row in the result set
                 cursor = (Cursor) listView.getItemAtPosition(position);
-
                 String duration = MusicHelper.milliSecondsToTimer(cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+
+                //Set up song object for selected one to send to another activity
+                //Activity can be player or tag editor depends on current viewpager
                 Song selectedSong = new Song(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media._ID)),
                         cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)),
                         cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)),
                         cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)),
                         duration);
-
                 ArrayList <Song> songList = new ArrayList<>();
                 songList.add(selectedSong);
                 int FragmentPosition=getArguments().getInt(KEY_POSITION, 0) + 1;   //there's one difference between keyposition and view definition
@@ -107,6 +111,9 @@ public class LibraryViewFragment  extends Fragment implements AdapterCallback {
 
     }
 
+    /**
+     * Update Data by reading data from database and set adapter
+     */
     private void updateData()
     {
         readDataFromDB(getArguments().getInt(KEY_POSITION, 0) + 1);

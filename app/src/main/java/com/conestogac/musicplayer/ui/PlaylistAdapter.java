@@ -15,7 +15,10 @@ import com.conestogac.musicplayer.model.Song;
 import java.util.ArrayList;
 
 /**
- * Created by infomat on 16-08-14.
+ * Playlist Adapter which is used in Player
+ * This is customized adapter which have image and text at the list
+ * And Data is given as Arraylist
+ * Author Changho Choi
  */
 public class PlaylistAdapter extends BaseAdapter{
     private ArrayList<Playlist> playlists;

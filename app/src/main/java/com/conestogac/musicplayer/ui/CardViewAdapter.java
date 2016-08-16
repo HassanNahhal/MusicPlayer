@@ -35,6 +35,7 @@ import java.util.ArrayList;
  * CardViewAdapter
  * This class to list up AlbumView
  * which is used by display album, artist, genre
+ * Autho: Changho Choi
  */
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHolder> {
     private final static String TAG = "CardViewAdapter";
@@ -53,6 +54,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     //to send back event to fragement to update screen
     private AdapterCallback mAdapterCallback;
 
+    /**
+     * Define ViewHolder for better performance
+     * https://developer.android.com/training/improving-layouts/smooth-scrolling.html
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
         private ImageView overflow;
@@ -63,6 +68,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         }
     }
 
+    /**
+     * Define default adapter constructor
+     * @param title
+     * @param number
+     * @param imageIds
+     */
     public CardViewAdapter(ArrayList<String> title, ArrayList<Integer> number, ArrayList<String> imageIds){
         this.firstTitles = title;
         this.secondTitles = title;
@@ -70,6 +81,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         this.albumArts = imageIds;
     }
 
+    /**
+     * Define AdapterConstructor for Albumview
+     * @param albumList
+     */
     public CardViewAdapter(ArrayList<Album> albumList){
         for (Album album : albumList) {
             this._ids.add(album.getID());
@@ -82,6 +97,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     }
 
     /**
+     * Define AdapterConstructor fo ArtistView
      * To avoid Java's same using same erasure error, dummy is added
      */
     public CardViewAdapter(ArrayList<Artist> artistList, boolean dummy){
@@ -98,6 +114,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     }
 
     /**
+     * Define Adapter Constructor for Playlist
      * Callback is  to give callback to fragment
      * This is for playlist
      */
@@ -116,6 +133,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
     }
 
 
+    /**
+     * onCreateViewHolder inflate layout and return ViewHolder Object
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @Override
     public CardViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         CardView cv = (CardView) LayoutInflater.from(parent.getContext())
@@ -124,6 +147,11 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         return new ViewHolder(cv);
     }
 
+    /**
+     * Bind ViewHolder
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         CardView cardView = holder.cardView;
@@ -135,6 +163,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
             GlideUtil.loadImageWithFilePath(file, imageView);
         }
 
+        //define view object pointer
         imageView.setContentDescription(firstTitles.get(position));
         TextView tvFirstTitle = (TextView)cardView.findViewById(R.id.firstTitle);
         TextView tvSecondTitle = (TextView)cardView.findViewById(R.id.secondTitle);
@@ -142,9 +171,18 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         final ImageView overflow = (ImageView) cardView.findViewById(R.id.overflow);
         tvFirstTitle.setText(firstTitles.get(position));
         tvSecondTitle.setText(secondTitles.get(position));
+
+        //if playlistview, remove second title
         if (viewpagerPos == SlideViewPagerAdapter.PLAYLIST_VIEW)
             tvSecondTitle.setVisibility(View.GONE);
+
+        //display number of song
         tvNumberOfSong.setText(String.valueOf(numbers.get(position)) + ((numbers.get(position) == 1)? " Song": " Songs"));
+
+        //set OnClick listener for card view
+        //It will read list of song by using of MusicHelper and return as ArrayList
+        //And This Arraylist will be handed to Playeractivity with Parceable Object
+        //Parceable Object Behaviour is defined at Song model
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,7 +191,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
 
                 // set information
                 // Transfer to musicplayer with intent
-
                 switch (viewpagerPos){
                     case SlideViewPagerAdapter.ALBUM_VIEW:  //Get Album
                         songArrayList = MusicHelper.getSongListByAlbum(ctxt, _ids.get(position));
@@ -171,16 +208,18 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                 if (songArrayList.size() == 0)
                     return;
 
+                //goto Music player
                 Intent gotoMusicPlayer = new Intent(ctxt, PlayerActivity.class);
                 View sharedView = imageView;
                 String transitionName = ctxt.getString(R.string.albumart);
-
+                //To show Transition animation
                 ActivityOptions transitionActivityOptions = ActivityOptions.makeSceneTransitionAnimation((Activity)ctxt, sharedView, transitionName);
                 gotoMusicPlayer.putExtra(PlayerActivity.EXTRA_SONGLIST, songArrayList);
                 ctxt.startActivity(gotoMusicPlayer, transitionActivityOptions.toBundle());
             }
         });
 
+        //Define 3-dot menu OnClick listener which will show popup menu
         holder.overflow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -188,6 +227,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
             }
         });
 
+        //Define cardview LongClick Listener for PlaylistVIew which Delete Playlist and Song
         cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -235,6 +275,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
         PopupMenu popup = new PopupMenu(ctxt, view);
         MenuInflater inflater = popup.getMenuInflater();
 
+        //Because this adapter is shared between view, it uses different menu
         if (viewpagerPos == SlideViewPagerAdapter.PLAYLIST_VIEW)
             inflater.inflate(R.menu.menu_playlist, popup.getMenu());
         else
@@ -312,7 +353,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.ViewHo
                         .show();
 
             } else if (menuItem.getItemId() == R.id.action_edit_playlist) {
-                    //call edit dialog fragement to get playlist name
+                    //call edit dialog fragement to get playlist name, after getting name it will call onMethodCallback at the fragment.
                     GetPlayListNameFragment getPlayListNameFragment = GetPlayListNameFragment.newInstance("Edit PlayList Name", this._id);
                     getPlayListNameFragment.setTargetFragment(playListFragment, 300);
                     getPlayListNameFragment.show(playListFragment.getFragmentManager(), "fragment_edit_name");

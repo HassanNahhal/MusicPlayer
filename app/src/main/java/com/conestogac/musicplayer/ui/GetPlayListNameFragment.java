@@ -13,7 +13,7 @@ import android.widget.EditText;
 import com.conestogac.musicplayer.R;
 
 /**
- * To get playlist name
+ * Diaglog Fragement to get playlist name
  * Author: Hassan Nahhal
  */
 public class GetPlayListNameFragment  extends DialogFragment {
@@ -25,6 +25,11 @@ public class GetPlayListNameFragment  extends DialogFragment {
         void onFinishGetPlayListNameDialogForUpdate(String playlistName,int index);
     }
 
+    /**
+     * This is for getting new name
+     * @param title
+     * @return
+     */
     public static GetPlayListNameFragment newInstance(String title) {
         updateIndex = -1;
         GetPlayListNameFragment frag = new GetPlayListNameFragment();
@@ -33,6 +38,13 @@ public class GetPlayListNameFragment  extends DialogFragment {
         frag.setArguments(args);
         return frag;
     }
+
+    /**
+     * This is for getting name for update
+     * @param title
+     * @param index
+     * @return
+     */
     public static GetPlayListNameFragment newInstance(String title, int index) {
         updateIndex = index;
         GetPlayListNameFragment frag = new GetPlayListNameFragment();
@@ -42,11 +54,16 @@ public class GetPlayListNameFragment  extends DialogFragment {
         return frag;
     }
 
+    /**
+     * Show as Dialog Style
+     * @param savedInstanceState
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL,android.R.style.Theme_Material_Light_Dialog_Alert);
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,6 +81,8 @@ public class GetPlayListNameFragment  extends DialogFragment {
             @Override
             public void onClick(View v) {
                 GetPlayListNameDialogListener listener = (GetPlayListNameDialogListener) getTargetFragment();
+
+                // Different callback is called for adding new and updating
                 if (updateIndex == -1) {
                     listener.onFinishGetPlayListNameDialogForAdd(playlistName.getText().toString());
                 } else {

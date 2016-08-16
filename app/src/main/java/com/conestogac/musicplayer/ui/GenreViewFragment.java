@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Sungjoe Kim
+ * Genre View
  */
 public class GenreViewFragment extends Fragment{
     private final static String TAG="PlayListViewFragment";

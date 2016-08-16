@@ -23,8 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * This class is for sharing API between classes
- * vis Static method
+ * This class is for sharing Music MediaStore utiliy class
  *
  * author Changho Choi
  */
